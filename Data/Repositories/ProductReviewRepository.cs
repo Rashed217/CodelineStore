@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodelineStore.Data.Repositories
 {
-    public class ProductReviewRepository
+    public class ProductReviewRepository : IProductReviewRepository
     {
         private readonly ApplicationDbContext _context;
 
