@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodelineStore.Data.Repositories
 {
-    public class OrderDetailsRepository
+    public class OrderDetailsRepository : IOrderDetailsRepository
     {
         private readonly ApplicationDbContext _context;
-       
+
         public OrderDetailsRepository(ApplicationDbContext context)
         {
             _context = context;
@@ -15,7 +15,7 @@ namespace CodelineStore.Data.Repositories
 
         public IEnumerable<OrderDetail> GetOrderProducts(int orderId)
         {
-            return _context.OrderDetails.Include(o=> o.order)
+            return _context.OrderDetails.Include(o => o.order)
                 .Include(o => o.product)
                 .Where(o => o.order.OId == orderId);
         }

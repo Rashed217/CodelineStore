@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodelineStore.Data.Repositories
 {
-    public class CategoryRepository
+    public class CategoryRepository : ICategoryRepository
     {
         private readonly ApplicationDbContext _context;
 
