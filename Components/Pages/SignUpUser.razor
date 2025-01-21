@@ -1,0 +1,165 @@
+﻿@page "/SignUpUser"
+@inject NavigationManager Navigation
+@inject ApplicationDbContext DbContext
+@inject IMapper mapper
+
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using AutoMapper
+@using CodelineStore.DTOs.ClientDTOs
+@using CodelineStore.DTOs.UserDTOs
+@using CodelineStore.Data
+@using CodelineStore.DTOs
+@using CodelineStore.Data.Model
+@using MudBlazor
+@using static MudBlazor.CategoryTypes
+
+<MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Style="min-height: 100vh; margin-top: 50px;">
+    <MudItem xs="12" sm="6" md="4">
+        <MudPaper Class="pa-6" Elevation="4" Style="border-radius: 10px; border: 2px solid #1976d2;">
+            <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-2">Sign up</MudText>
+            <MudText Typo="Typo.body2" Align="Align.Center" Class="mb-4">Sign up to continue</MudText>
+
+            @if (showSuccessAlert)
+            {
+                <MudAlert Severity="Severity.Success" Class="mb-3">User registered successfully, now you can login with your account</MudAlert>
+            }
+            @if (showFailedAlert)
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-3">An error occurred</MudAlert>
+            }
+
+            <MudForm @ref="form" IsValid="@success">
+                <!-- Username -->
+                <MudTextField @bind-Value="userInput.Username"
+                              Label="Name"
+                              Required="true"
+                              RequiredError="Name is required!"
+                              Class="mb-3" />
+
+                <!-- Email -->
+                <MudTextField @bind-Value="userInput.Email"
+                              Label="Email"
+                              Required="true"
+                              Validation="@(new EmailAddressAttribute() { ErrorMessage = "Invalid email address" })"
+                              Class="mb-3" />
+
+                <!-- Password -->
+                <MudTextField @bind-Value="userInput.Password"
+                              Label="Password"
+                              InputType="InputType.Password"
+                              Required="true"
+                              RequiredError="Password is required!"
+                              Class="mb-3" />
+
+                <!-- Phone Number -->
+                <MudTextField @bind-Value="userInput.PhoneNumber"
+                              Label="Phone Number"
+                              Required="true"
+                              RequiredError="Phone number is required!"
+                              Class="mb-3" />
+
+                <!-- Country Selector -->
+                <MudSelect @bind-Value="userInput.Country" Label="Select a Country" Variant="Variant.Outlined" Class="mb-3">
+                    @foreach (var country in _country)
+                    {
+                        <MudSelectItem Value="@country">@country</MudSelectItem>
+                    }
+                </MudSelect>
+
+                <!-- Address -->
+                <MudTextField @bind-Value="userInput.Address"
+                              Label="Address"
+                              Required="true"
+                              RequiredError="Address is required!"
+                              Class="mb-3" />
+
+                <!-- Submit Button -->
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           FullWidth="true"
+                           OnClick="RegisterUser">
+                    Register
+                </MudButton>
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+
+@code {
+    private MudForm form;
+    private bool success;
+    private bool showSuccessAlert = false;
+    private bool showFailedAlert = false;
+
+    private ClientInput userInput = new ClientInput();
+
+    private async Task RegisterUser()
+    {
+        try
+        {
+            await form.Validate();
+            if (form.IsValid)
+            {
+                // Map user-specific data
+                var userEntity = new User
+                    {
+                        Username = userInput.Username,
+                        Email = userInput.Email,
+                        Password = HashPassword(userInput.Password), // Ensure to hash the password
+                        Country = userInput.Country,
+                        Role = userInput.Role
+                    };
+
+                // Map client-specific data
+                var clientEntity = new Client
+                    {
+                        PhoneNumber = userInput.PhoneNumber,
+                        Address = userInput.Address,
+                        User = userEntity // Establish relationship between User and Client
+                    };
+
+                // Add user to Users table
+                DbContext.Users.Add(userEntity);
+
+                // Add client to Clients table
+                DbContext.Clients.Add(clientEntity);
+
+                // Save changes to the database
+                await DbContext.SaveChangesAsync();
+
+                // Show success alert and reset the form
+                showSuccessAlert = true;
+                showFailedAlert = false;
+
+                userInput.Username = string.Empty;
+                userInput.Email = string.Empty;
+                userInput.Password = string.Empty;
+                userInput.PhoneNumber = string.Empty;
+                userInput.Address = string.Empty;
+            }
+        }
+        catch (Exception)
+        {
+            showSuccessAlert = false;
+            showFailedAlert = true;
+        }
+    }
+
+    private string HashPassword(string password)
+    {
+        // Replace this with a real hashing algorithm like BCrypt, SHA256, or PBKDF2
+        return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(password));
+    }
+
+    private string[] _country =
+    {
+    "United States", "Canada", "United Kingdom", "Germany", "France",
+    "Italy", "Spain", "Australia", "India", "China",
+    "Japan", "Brazil", "Russia", "South Africa", "Mexico",
+    "South Korea", "Turkey", "Saudi Arabia", "Argentina", "Indonesia",
+    "United Arab Emirates", "Palestine", "Qatar", "Kuwait", "Oman",
+    "Bahrain", "Jordan", "Lebanon", "Egypt", "Iraq"
+    };
+}

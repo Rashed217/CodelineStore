@@ -1,4 +1,19 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@inject UserState UserState
+
+@using CodelineStore.Services
+
+
+@* Required *@
+<MudThemeProvider />
+<MudPopoverProvider />
+
+@* Needed for dialogs *@
+<MudDialogProvider />
+
+@* Needed for snackbars *@
+<MudSnackbarProvider />
 
 <div class="page">
     <div class="sidebar">
@@ -6,8 +21,34 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        <div class="top-row px-4 d-flex justify-between align-items-center" style="height: 70px;">
+            <!-- Logo -->
+            <div>
+                <img src="images/logo.png" alt="Logo" style="height: 60px;" />
+            </div>
+
+            <!-- Search Box -->
+            <div class="flex-grow-1 mx-3">
+                <MudTextField T="string" Label="Search" Variant="Variant.Filled" FullWidth="true" Style="max-width: 350px;" />
+            </div>
+
+            <!-- User Info or Buttons -->
+            <div>
+                @if (UserState.IsLoggedIn)
+                {
+                    <div class="d-flex align-items-center">
+                        <MudText Typo="Typo.subtitle1" Class="mr-2">Hello, @UserState.UserName</MudText>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@LogOut">Log Out</MudButton>
+                    </div>
+                }
+                else
+                {
+                    <MudButtonGroup Color="Color.Primary" Size="Size.Medium" Variant="Variant.Text">
+                        <MudButton OnClick="@NavigateToSignUp">Sign Up</MudButton>
+                        <MudButton OnClick="@NavigateToLogin">Login</MudButton>
+                    </MudButtonGroup>
+                }
+            </div>
         </div>
 
         <article class="content px-4">
@@ -21,3 +62,24 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    private void NavigateToSignUp()
+    {
+        // Navigate to the SignUp page
+        Navigation.NavigateTo("/SignUpUser");
+    }
+
+    private void NavigateToLogin()
+    {
+        // Navigate to the Login page
+        Navigation.NavigateTo("/Login");
+    }
+
+    private void LogOut()
+    {
+        UserState.LogOut();
+        Navigation.NavigateTo("/");
+    }
+}
+

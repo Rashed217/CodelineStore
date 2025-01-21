@@ -1,7 +1,110 @@
 ﻿@page "/"
+@using CodelineStore.Data.Model
+@using Microsoft.EntityFrameworkCore
+@using CodelineStore.Data
+@using MudBlazor
+@inject NavigationManager Navigation
+@inject ApplicationDbContext DbContext
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Amazon Simulator</PageTitle>
 
-<h1>Hello, world!</h1>
+@* <MudCarousel Class="mud-width-full" Style="height:250px;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
+    <MudCarouselItem Transition="transition">
+        <div class="d-flex" style="height:100%; width:100%;">
+            <MudImage Src="images/Carousel1.jpg" Alt="Photo 1" Class="mx-auto my-auto" Style="width:100%; height:100%; object-fit:fill;" />
+        </div>
+    </MudCarouselItem>
+    <MudCarouselItem Transition="transition">
+        <div class="d-flex" style="height:100%; width:100%;">
+            <MudImage Src="images/Carousel2.jpg" Alt="Photo 2" Class="mx-auto my-auto" Style="width:100%; height:100%; object-fit:fill;" />
+        </div>
+    </MudCarouselItem>
+    <MudCarouselItem Transition="transition">
+        <div class="d-flex" style="height:100%; width:100%;">
+            <MudImage Src="images/Carousel3.jpg" Alt="Photo 3" Class="mx-auto my-auto" Style="width:100%; height:100%; object-fit:fill;" />
+        </div>
+    </MudCarouselItem>
+</MudCarousel> *@
 
-Welcome to your new app.
+
+
+<MudGrid Justify="Justify.Center" Spacing="3" Style="margin-top: 40px;">
+    <!-- Category 1 -->
+    <MudItem xs="12" sm="4">
+        <MudCard>
+            <MudCardMedia Image="images/Furniture.jpg" Height="200" />
+            <MudCardContent>
+                <MudText Typo="Typo.h5">Furniture</MudText>
+                <MudText Typo="Typo.body2">Explore our wide range of furniture for your living room, bedroom, and office space. Stylish and comfortable for every home.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(FurnitureCategoryId)">
+                    Shop Furniture
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <!-- Category 2 -->
+    <MudItem xs="12" sm="4">
+        <MudCard>
+            <MudCardMedia Image="images/Electronics.jpg" Height="200" />
+            <MudCardContent>
+                <MudText Typo="Typo.h5">Electronics</MudText>
+                <MudText Typo="Typo.body2">Discover the latest gadgets and electronics. From smartphones to smart home devices, we've got it all.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ElectronicsCategoryId)">
+                    Shop Electronics
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <!-- Category 3 -->
+    <MudItem xs="12" sm="4">
+        <MudCard>
+            <MudCardMedia Image="images/Clothing.jpg" Height="200" />
+            <MudCardContent>
+                <MudText Typo="Typo.h5">Clothing</MudText>
+                <MudText Typo="Typo.body2">Find the latest trends in fashion. From casual wear to formal outfits, we have something for everyone.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ClothingCategoryId)">
+                    Shop Clothing
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private bool arrows = true;
+    private bool bullets = true;
+    private bool enableSwipeGesture = true;
+    private bool autocycle = true;
+    private Transition transition = Transition.Slide;
+    private List<Category> categories;
+    private int ElectronicsCategoryId = 1;
+    private int FurnitureCategoryId = 2;
+    private int ClothingCategoryId = 3;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Fetch categories from the database
+            categories = await DbContext.Categories.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching categories: {ex.Message}");
+        }
+    }
+
+    private void NavigateToCategory(int categoryId)
+    {
+        // Navigate to the selected category page
+        Navigation.NavigateTo($"/ProductCategory/{categoryId}");
+    }
+}

@@ -1,5 +1,8 @@
 using CodelineStore.Components;
+using CodelineStore.Services;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor.Services;
+using AutoMapper;
 
 namespace CodelineStore
 {
@@ -17,9 +20,16 @@ namespace CodelineStore
 
                   );
 
+            builder.Services.AddScoped<UserState>();
+
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+
+            builder.Services.AddMudServices();
+
+            // Register AutoMapper
+            builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
             var app = builder.Build();
 
