@@ -21,16 +21,27 @@
     </div>
 
     <main>
-        <div class="top-row px-4 d-flex justify-between align-items-center" style="height: 70px;">
+        <div class="top-row px-4 d-flex justify-between align-items-center" style="height: 90px;">
             <!-- Logo -->
-            <div>
-                <img src="images/logo.png" alt="Logo" style="height: 60px;" />
+            <div class="d-flex justify-start align-items-center gap-4" style="flex-grow: 1;">
+                <img src="images/CodelineStore.jpg" alt="Logo" style="height: 90px; width: 225px;" />
+
+                <!-- Search TextField and Search Button Group -->
+                <div class="d-flex align-items-center" style="max-width: 400px; width: 100%; gap: 10px;">
+                    <!-- Search TextField -->
+                    <MudTextField @bind-Value="SearchQuery"
+                                  Label="Search"
+                                  Variant="Variant.Outlined"
+                                  Style="border-radius: 25px; flex-grow: 1; padding: 5px; background-color: rgba(255, 255, 255, 0.2); color: black; height: 55px;"
+                                  LabelStyle="font-size: 16px; padding-top: 0px;" />
+                    <!-- Search Icon Button -->
+                    <MudIconButton Icon="fas fa-search"
+                                   Color="Color.Primary"
+                                   OnClick="NavigateToSearchResults"
+                                   Style="border-radius: 50%; width: 50px; height: 50px; border: 1px solid #7372769f;" />
+                </div>
             </div>
 
-            <!-- Search Box -->
-            <div class="flex-grow-1 mx-3">
-                <MudTextField T="string" Label="Search" Variant="Variant.Filled" FullWidth="true" Style="max-width: 350px;" />
-            </div>
 
             <!-- User Info or Buttons -->
             <div>
@@ -43,8 +54,11 @@
                 }
                 else
                 {
-                    <MudButtonGroup Color="Color.Primary" Size="Size.Medium" Variant="Variant.Text">
-                        <MudButton OnClick="@NavigateToSignUp">Sign Up</MudButton>
+                    <MudButtonGroup Color="Color.Primary" Size="Size.Large" Variant="Variant.Outlined">
+                        <MudMenu Label="Register" Color="Color.Primary" Size="Size.Large" Variant="Variant.Outlined">
+                            <MudMenuItem Label="Register as Customer" Href="/SignUpUser" />
+                            <MudMenuItem Label="Register as Seller" Href="/SignUpSeller" />
+                        </MudMenu>
                         <MudButton OnClick="@NavigateToLogin">Login</MudButton>
                     </MudButtonGroup>
                 }
@@ -64,11 +78,6 @@
 </div>
 
 @code {
-    private void NavigateToSignUp()
-    {
-        // Navigate to the SignUp page
-        Navigation.NavigateTo("/SignUpUser");
-    }
 
     private void NavigateToLogin()
     {
@@ -80,6 +89,17 @@
     {
         UserState.LogOut();
         Navigation.NavigateTo("/");
+    }
+
+    private string SearchQuery { get; set; }
+
+    private void NavigateToSearchResults()
+    {
+        if (!string.IsNullOrEmpty(SearchQuery))
+        {
+            // Redirect to the search results page with the query as a parameter
+            Navigation.NavigateTo($"/search?query={SearchQuery}");
+        }
     }
 }
 

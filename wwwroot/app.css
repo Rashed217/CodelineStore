@@ -49,3 +49,26 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+.top-row {
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+}
+
+@media (max-width: 768px) {
+    .top-row {
+        flex-direction: column; /* Stack items vertically on smaller screens */
+        align-items: flex-start; /* Align items to the start */
+    }
+
+        .top-row img {
+            max-width: 100%; /* Ensure the logo is responsive */
+            height: auto; /* Maintain aspect ratio */
+        }
+
+    .flex-grow-1 {
+        width: 100%; /* Make the search box full width on smaller screens */
+        margin-top: 10px; /* Add some space above the search box */
+    }
+
+}

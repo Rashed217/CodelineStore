@@ -11,14 +11,15 @@
 @using CodelineStore.Data
 @using CodelineStore.DTOs
 @using CodelineStore.Data.Model
+@using Microsoft.EntityFrameworkCore
 @using MudBlazor
 @using static MudBlazor.CategoryTypes
 
 <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Style="min-height: 100vh; margin-top: 50px;">
     <MudItem xs="12" sm="6" md="4">
         <MudPaper Class="pa-6" Elevation="4" Style="border-radius: 10px; border: 2px solid #1976d2;">
-            <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-2">Sign up</MudText>
-            <MudText Typo="Typo.body2" Align="Align.Center" Class="mb-4">Sign up to continue</MudText>
+            <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-2">Customer Registration</MudText>
+            <MudText Typo="Typo.body2" Align="Align.Center" Class="mb-4">Register to continue</MudText>
 
             @if (showSuccessAlert)
             {
@@ -60,7 +61,7 @@
                               Class="mb-3" />
 
                 <!-- Country Selector -->
-                <MudSelect @bind-Value="userInput.Country" Label="Select a Country" Variant="Variant.Outlined" Class="mb-3">
+                <MudSelect @bind-Value="userInput.Country" Label="Select a Country" Variant="Variant.Filled" Class="mb-3">
                     @foreach (var country in _country)
                     {
                         <MudSelectItem Value="@country">@country</MudSelectItem>
@@ -137,6 +138,7 @@
                 userInput.Email = string.Empty;
                 userInput.Password = string.Empty;
                 userInput.PhoneNumber = string.Empty;
+                userInput.Country = string.Empty;
                 userInput.Address = string.Empty;
             }
         }
@@ -162,4 +164,5 @@
     "United Arab Emirates", "Palestine", "Qatar", "Kuwait", "Oman",
     "Bahrain", "Jordan", "Lebanon", "Egypt", "Iraq"
     };
+
 }
