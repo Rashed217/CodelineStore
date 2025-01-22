@@ -1,0 +1,82 @@
+﻿@page "/Login"
+@inject NavigationManager Navigation
+@inject ApplicationDbContext DbContext
+@inject UserState UserState
+
+@using System.ComponentModel.DataAnnotations
+@using CodelineStore.Services
+@using Microsoft.EntityFrameworkCore
+
+<MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Style="min-height: 100vh; margin-top: 100px;">
+    <MudItem xs="12" sm="6" md="4">
+        <MudPaper Class="pa-6" Elevation="4" Style="border-radius: 10px; border: 2px solid #1976d2;">
+            <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-2">Login</MudText>
+            <MudText Typo="Typo.body2" Align="Align.Center" Class="mb-4">Enter your credentials to continue</MudText>
+
+            @if (showError)
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-3">Invalid email or password</MudAlert>
+            }
+
+            <MudForm @ref="form" IsValid="@success">
+                <MudTextField @bind-Value="email" Label="Email" Required="true" RequiredError="Email is required!"
+                              Validation="@(new EmailAddressAttribute() { ErrorMessage = "Invalid email address" })" Class="mb-3" />
+                <MudTextField @bind-Value="password" Label="Password" InputType="InputType.Password" Required="true"
+                              RequiredError="Password is required!" Class="mb-3" />
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="LoginUser">
+                    Login
+                </MudButton>
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private bool success;
+    private bool showError = false;
+    private MudForm form;
+    private string email;
+    private string password;
+
+    private async Task LoginUser()
+    {
+        if (form.IsValid)
+        {
+            try
+            {
+                var user = await DbContext.Users
+                    .Where(u => u.Email == email)
+                    .FirstOrDefaultAsync();
+
+                if (user != null && VerifyPassword(password, user.Password))
+                {
+                    // Set the logged-in user's name in UserState
+                    UserState.LogIn(user.Username);
+
+                    // Redirect to the homepage or dashboard
+                    Navigation.NavigateTo("/");
+                }
+                else
+                {
+                    showError = true;
+                }
+            }
+            catch (Exception)
+            {
+                showError = true;
+            }
+        }
+    }
+
+    private bool VerifyPassword(string enteredPassword, string storedPasswordHash)
+    {
+        // Example: Compare hashed passwords (implement actual hashing logic)
+        return HashPassword(enteredPassword) == storedPasswordHash;
+    }
+
+    private string HashPassword(string password)
+    {
+        // Replace this with a secure password hashing algorithm (e.g., BCrypt, SHA256)
+        return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(password));
+    }
+}
