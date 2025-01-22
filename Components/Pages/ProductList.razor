@@ -1,0 +1,185 @@
+﻿@page "/ProductList"
+@using CodelineStore.Data
+@using CodelineStore.Data.Model
+@using CodelineStore.Services
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager Navigation
+@inject ApplicationDbContext DbContext
+@using CodelineStore.Components.Layout
+@layout SellerLayout
+
+
+
+
+<header>
+    <!-- Navigation bar or header here -->
+    <h2>Seller Dashboard</h2>
+    <nav>
+        
+    </nav>
+</header>
+@if (products == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Seller</th>
+                <th>Image</th>
+                <th>Actions</th> <!-- Add Actions column -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td>@product.PId</td>
+                    <td>@product.Name</td>
+                    <td>@product.Price</td>
+                    <td>@product.Description</td>
+                    <td>@product.Category?.Name</td> <!-- Category Name -->
+                    <td>@product.Seller?.User?.Username</td> <!-- Seller Name (assuming User has Name property) -->
+                    <td>
+                        @if (product.ProductImages.Any())
+                        {
+                            <img src="@product.ProductImages.FirstOrDefault().imagePath" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <img src="default-image.jpg" alt="Default Image" style="width: 50px; height: 50px; object-fit: cover;" />
+                        }
+                    </td>
+                    <td>
+                        <!-- Edit Button -->
+                        <button class="btn btn-primary btn-sm" @onclick="() => EditProduct(product.PId)">Edit</button>
+
+                        <!-- Delete Button -->
+                        <button class="btn btn-danger btn-sm" @onclick="() => ShowDeleteConfirmation(product.PId)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Delete Confirmation Modal (optional, using MudBlazor for modal) -->
+    @if (showDeleteConfirmation)
+    {
+        <MudDialog @bind-IsOpen="showDeleteConfirmation" MaxWidth="MaxWidth.Small">
+            <MudDialogTitle>Confirm Deletion</MudDialogTitle>
+            <MudDialogActions>
+                <MudButton OnClick="() => HandleConfirmation(true)" Color="Color.Primary">Confirm</MudButton>
+                <MudButton OnClick="() => HandleConfirmation(false)" Color="Color.Secondary">Cancel</MudButton>
+            </MudDialogActions>
+        </MudDialog>
+    }
+    @inherits LayoutComponentBase
+
+    <div class="seller-layout">
+        <main>
+            @Body  <!-- The main content of the page will be rendered here -->
+        </main>
+
+        <footer>
+            <!-- Footer content here -->
+            <p>&copy; 2025 CodelineStore. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <style>
+        .seller-layout {
+            padding: 20px;
+        }
+
+        header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+        }
+
+            nav ul li {
+                margin: 0 10px;
+            }
+
+                nav ul li a {
+                    text-decoration: none;
+                    color: #333;
+                }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+}
+
+@code {
+    private List<Product> products;
+    private bool showDeleteConfirmation = false;
+    private int productIdToDelete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Retrieve products from the database along with Category and Seller information
+        products = await DbContext.Products
+            .Include(p => p.ProductImages)
+            .Include(p => p.Category)
+            .Include(p => p.Seller)
+            .ThenInclude(s => s.User) // Assuming User is related to Seller
+            .ToListAsync();
+    }
+
+    private void EditProduct(int id)
+    {
+        // Navigate to an Edit Product page with the product ID
+        Navigation.NavigateTo($"/EditProduct/{id}");
+    }
+
+    private async Task DeleteProduct(int id)
+    {
+        try
+        {
+            // Find the product by ID and delete it
+            var product = await DbContext.Products.FindAsync(id);
+            if (product != null)
+            {
+                DbContext.Products.Remove(product);
+                await DbContext.SaveChangesAsync();
+                products = await DbContext.Products.ToListAsync(); // Refresh product list
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting product: {ex.Message}");
+        }
+    }
+
+    private void ShowDeleteConfirmation(int id)
+    {
+        productIdToDelete = id;
+        showDeleteConfirmation = true;
+    }
+
+    private async Task HandleConfirmation(bool confirmed)
+    {
+        if (confirmed)
+        {
+            await DeleteProduct(productIdToDelete);
+        }
+        showDeleteConfirmation = false;
+    }
+}
