@@ -3,12 +3,42 @@
     <MudNavMenu Class="mud-width-full">
         <MudText Typo="Typo.h5" Class="px-4">Customer Menu</MudText>
         <MudDivider Class="my-2" />
+
         <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-        <MudNavLink Href="/Brands" Icon="@Icons.Material.Filled.Shop2">Brands</MudNavLink>
-        <MudNavLink Href="/Category" Icon="@Icons.Material.Filled.Category">Catgories</MudNavLink>
+
+        <!-- Brands Navigation Group -->
+        <MudNavGroup Title="Brands" Icon="@Icons.Material.Filled.Shop2">
+            <MudNavLink Href="/Brands/Apple" Icon="@Icons.Material.Filled.PhoneIphone">
+                Apple
+            </MudNavLink>
+            <MudNavLink Href="/Brands/Samsung" Icon="@Icons.Material.Filled.Smartphone">
+                Samsung
+            </MudNavLink>
+            <MudNavLink Href="/Brands/Nike" Icon="@Icons.Material.Filled.FitnessCenter">
+                Nike
+            </MudNavLink>
+            <MudNavLink Href="/Brands/Adidas" Icon="@Icons.Material.Filled.SportsSoccer">
+                Adidas
+            </MudNavLink>
+        </MudNavGroup>
+
+        <!-- Categories Navigation Group -->
+        <MudNavGroup Title="Categories" Icon="@Icons.Material.Filled.Category">
+            <MudNavLink Href="/Category/Electronics" Icon="@Icons.Material.Filled.ElectricalServices">
+                Electronics
+            </MudNavLink>
+            <MudNavLink Href="/Category/Furniture" Icon="@Icons.Material.Filled.Weekend">
+                Furniture
+            </MudNavLink>
+            <MudNavLink Href="/Category/Clothing" Icon="@Icons.Material.Filled.Checkroom">
+                Clothing
+            </MudNavLink>
+        </MudNavGroup>
+
         <MudNavGroup Title="User" Icon="@Icons.Material.Filled.VerifiedUser" Expanded="true">
             <MudNavLink Href="/ViewOrders" Icon="@Icons.Material.Filled.ShoppingCart" IconColor="Color.Success">View Orders</MudNavLink>
             <MudNavLink Href="/ViewUserProfile" Icon="@Icons.Material.Filled.People" IconColor="Color.Info">View Profile</MudNavLink>
         </MudNavGroup>
+
     </MudNavMenu>
 </MudPaper>

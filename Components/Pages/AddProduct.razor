@@ -1,0 +1,144 @@
+﻿@page "/AddProduct"
+@using CodelineStore.Data
+@using CodelineStore.Data.Model
+@using CodelineStore.Services
+@using Microsoft.EntityFrameworkCore
+@using static MudBlazor.CategoryTypes
+@inject IProductService1 ProductService1
+@inject NavigationManager Navigation
+@inject ApplicationDbContext DbContext
+@using CodelineStore.Components.Layout
+@layout SellerLayout
+
+<header>
+    <!-- Navigation bar or header here -->
+    <h2>Seller Dashboard</h2>
+    <nav>
+
+    </nav>
+</header>
+
+
+<h3>Add Product</h3>
+
+@if (showSuccessAlert)
+{
+    <MudAlert Severity="Severity.Success" Class="mb-3">Product has been added successfully</MudAlert>
+}
+@if (showFailedAlert)
+{
+    <MudAlert Severity="Severity.Error" Class="mb-3">An error occurred</MudAlert>
+}
+
+<MudForm @ref="form" OnValidSubmit="HandleValidSubmit">
+    <MudTextField T="string" Label="Product Name" @bind-Value="newProduct.Name" Variant="Variant.Outlined" Class="mb-3" />
+    <MudTextField T="decimal" Label="Price" @bind-Value="newProduct.Price" Variant="Variant.Outlined" Class="mb-3" />
+    <MudTextField T="string" Label="Description" @bind-Value="newProduct.Description" Variant="Variant.Outlined" Class="mb-3" />
+    <MudTextField T="string" Label="Image URL" @bind-Value="newProduct.Description" Variant="Variant.Outlined" Class="mb-3" />
+
+    <!-- Stock Input -->
+    <MudTextField T="int" Label="Stock" @bind-Value="newProduct.Stock" Variant="Variant.Outlined" Class="mb-3" />
+
+    <!-- TotalSold (You can set this automatically, for now it's not used directly in the form) -->
+    <MudTextField T="int" Label="Total Sold" @bind-Value="newProduct.TotalSold" Variant="Variant.Outlined" Class="mb-3" Disabled />
+
+    <!-- Category Dropdown (assuming you have a list of categories) -->
+    <MudSelect T="int" Label="Category" @bind-Value="newProduct.CategoryId" Variant="Variant.Outlined" Class="mb-3">
+        @foreach (var category in categories)
+        {
+            <MudSelectItem T="int" Value="@category.CatId">@category.Name</MudSelectItem>
+        }
+    </MudSelect>
+
+    <!-- Seller Dropdown (assuming you have a list of sellers) -->
+    <MudSelect T="int" Label="Seller" @bind-Value="newProduct.SellerId" Variant="Variant.Outlined" Class="mb-3">
+        @foreach (var seller in sellers)
+        {
+            <MudSelectItem T="int" Value="@seller.SId">@seller.User.Client</MudSelectItem>
+        }
+    </MudSelect>
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="HandleValidSubmit">
+        Add Product
+    </MudButton>
+</MudForm>
+
+<div class="seller-layout">
+
+    <footer>
+        <!-- Footer content here -->
+        <p>&copy; 2025 CodelineStore. All rights reserved.</p>
+    </footer>
+</div>
+
+<style>
+    .seller-layout {
+        padding: 20px;
+    }
+
+    header {
+        background-color: #f8f9fa;
+        padding: 10px;
+        text-align: center;
+    }
+
+    nav ul {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        padding: 0;
+    }
+
+        nav ul li {
+            margin: 0 10px;
+        }
+
+            nav ul li a {
+                text-decoration: none;
+                color: #333;
+            }
+
+    footer {
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
+}
+
+
+@code {
+    private MudForm form;
+    private bool showSuccessAlert = false;
+    private bool showFailedAlert = false;
+    private Product newProduct = new Product();
+    private List<Category> categories = new List<Category>(); // Categories to show in dropdown
+    private List<Seller> sellers = new List<Seller>(); // Sellers to show in dropdown
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch the categories and sellers from the database
+        categories = await DbContext.Categories.ToListAsync();
+        sellers = await DbContext.Sellers.Include(s => s.User).ToListAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            // Add the new product to the database
+            DbContext.Products.Add(newProduct);
+            await DbContext.SaveChangesAsync();
+
+            showSuccessAlert = true;
+            // Reset the form after successful submission
+            newProduct = new Product();
+        }
+        catch (Exception ex)
+        {
+            showFailedAlert = true;
+        }
+
+        // Navigate to the ProductList page after submitting the form
+        Navigation.NavigateTo("/ProductList");
+    }
+}

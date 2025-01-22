@@ -3,6 +3,7 @@ using CodelineStore.Services;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using AutoMapper;
+using CodelineStore.Data.Repositories;
 
 namespace CodelineStore
 {
@@ -21,6 +22,9 @@ namespace CodelineStore
                   );
 
             builder.Services.AddScoped<UserState>();
+
+            builder.Services.AddScoped<IProductService1, ProductService1>();
+            builder.Services.AddScoped<IProductRepository1, ProductRepository1>();
 
             // Add services to the container.
             builder.Services.AddRazorComponents()

@@ -8,10 +8,10 @@
 
 <PageTitle>Codeline Store</PageTitle>
 
-@* <MudCarousel Class="mud-width-full" Style="height:250px;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
+<MudCarousel Class="mud-width-full" Style="height:320px;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
     <MudCarouselItem Transition="transition">
         <div class="d-flex" style="height:100%; width:100%;">
-            <MudImage Src="images/Carousel1.jpg" Alt="Photo 1" Class="mx-auto my-auto" Style="width:100%; height:100%; object-fit:fill;" />
+            <MudImage Src="images/CodelineStore.jpg" Alt="Photo 1" Class="mx-auto my-auto" Style="width:100%; height:100%; object-fit:fill;" />
         </div>
     </MudCarouselItem>
     <MudCarouselItem Transition="transition">
@@ -24,18 +24,21 @@
             <MudImage Src="images/Carousel3.jpg" Alt="Photo 3" Class="mx-auto my-auto" Style="width:100%; height:100%; object-fit:fill;" />
         </div>
     </MudCarouselItem>
-</MudCarousel> *@
+</MudCarousel>
 
+<!-- Divider Line -->
+<MudDivider Style="margin: 40px 0;" />
 
+<h1>Top Categories</h1>
 
-<MudGrid Justify="Justify.Center" Spacing="3" Style="margin-top: 40px;">
+<MudGrid Justify="Justify.Center" Spacing="3" Style="margin-top: 20px;">
     <!-- Category 1 -->
-    <MudItem xs="12" sm="4">
+    <MudItem xs="6" sm="3">
         <MudCard>
             <MudCardMedia Image="images/Furniture.jpg" Height="200" />
             <MudCardContent>
                 <MudText Typo="Typo.h5">Furniture</MudText>
-                <MudText Typo="Typo.body2">Explore our wide range of furniture for your living room, bedroom, and office space. Stylish and comfortable for every home.</MudText>
+                <MudText Typo="Typo.body2">Explore our wide range of furniture for your living room, bedroom, and office space.</MudText>
             </MudCardContent>
             <MudCardActions>
                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(FurnitureCategoryId)">
@@ -46,7 +49,7 @@
     </MudItem>
 
     <!-- Category 2 -->
-    <MudItem xs="12" sm="4">
+    <MudItem xs="6" sm="3">
         <MudCard>
             <MudCardMedia Image="images/Electronics.jpg" Height="200" />
             <MudCardContent>
@@ -62,7 +65,7 @@
     </MudItem>
 
     <!-- Category 3 -->
-    <MudItem xs="12" sm="4">
+    <MudItem xs="6" sm="3">
         <MudCard>
             <MudCardMedia Image="images/Clothing.jpg" Height="200" />
             <MudCardContent>
@@ -77,6 +80,140 @@
         </MudCard>
     </MudItem>
 </MudGrid>
+
+<MudGrid Justify="Justify.Center" Spacing="3" Style="margin-top: 20px;">
+    <!-- Category 1 -->
+    <MudItem xs="6" sm="3">
+        <MudCard>
+            <MudCardMedia Image="images/Furniture.jpg" Height="200" />
+            <MudCardContent>
+                <MudText Typo="Typo.h5">Furniture</MudText>
+                <MudText Typo="Typo.body2">Explore our wide range of furniture for your living room, bedroom, and office space.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(FurnitureCategoryId)">
+                    Shop Furniture
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <!-- Category 2 -->
+    <MudItem xs="6" sm="3">
+        <MudCard>
+            <MudCardMedia Image="images/Electronics.jpg" Height="200" />
+            <MudCardContent>
+                <MudText Typo="Typo.h5">Electronics</MudText>
+                <MudText Typo="Typo.body2">Discover the latest gadgets and electronics. From smartphones to smart home devices, we've got it all.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ElectronicsCategoryId)">
+                    Shop Electronics
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <!-- Category 3 -->
+    <MudItem xs="6" sm="3">
+        <MudCard>
+            <MudCardMedia Image="images/Clothing.jpg" Height="200" />
+            <MudCardContent>
+                <MudText Typo="Typo.h5">Clothing</MudText>
+                <MudText Typo="Typo.body2">Find the latest trends in fashion. From casual wear to formal outfits, we have something for everyone.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ClothingCategoryId)">
+                    Shop Clothing
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<!-- Divider Line -->
+<MudDivider Style="margin: 40px 0;" />
+
+<h1>Top Brands</h1>
+
+<MudGrid Justify="Justify.Center" Spacing="3" Style="margin-top: 20px;">
+    <!-- Category 1 -->
+    <MudItem xs="6" sm="3">
+        <MudCard>
+            <MudCardMedia Image="images/Apple.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
+            <MudCardActions Style="justify-content: center;">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(FurnitureCategoryId)">
+                    Apple
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <!-- Category 2 -->
+    <MudItem xs="6" sm="3">
+        <MudCard>
+            <MudCardMedia Image="images/Samsung.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
+            <MudCardActions Style="justify-content: center;">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ElectronicsCategoryId)">
+                    Samsung
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <!-- Category 3 -->
+    <MudItem xs="6" sm="3">
+        <MudCard>
+            <MudCardMedia Image="images/Nike.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
+            <MudCardActions Style="justify-content: center;">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ClothingCategoryId)">
+                    Nike
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<MudGrid Justify="Justify.Center" Spacing="3" Style="margin-top: 20px;">
+    <!-- Category 1 -->
+    <MudItem xs="6" sm="3">
+        <MudCard>
+            <MudCardMedia Image="images/Adidas.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
+            <MudCardActions Style="justify-content: center;">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(FurnitureCategoryId)">
+                    Adidas
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <!-- Category 2 -->
+    <MudItem xs="6" sm="3">
+        <MudCard>
+            <MudCardMedia Image="images/Zara.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
+            <MudCardActions Style="justify-content: center;">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ElectronicsCategoryId)">
+                    Zara
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <!-- Category 3 -->
+    <MudItem xs="6" sm="3">
+        <MudCard>
+            <MudCardMedia Image="images/Dell.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
+            <MudCardActions Style="justify-content: center;">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ClothingCategoryId)">
+                    Dell
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<!-- Divider Line -->
+<MudDivider Style="margin: 40px 0;" />
 
 @code {
     private bool arrows = true;
