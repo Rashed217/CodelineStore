@@ -8,10 +8,10 @@
 
 <PageTitle>Codeline Store</PageTitle>
 
-<MudCarousel Class="mud-width-full" Style="height:280px;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
+<MudCarousel Class="mud-width-full" Style="height:320px;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
     <MudCarouselItem Transition="transition">
         <div class="d-flex" style="height:100%; width:100%;">
-            <MudImage Src="images/Carousel1.jpg" Alt="Photo 1" Class="mx-auto my-auto" Style="width:100%; height:100%; object-fit:fill;" />
+            <MudImage Src="images/CodelineStore.jpg" Alt="Photo 1" Class="mx-auto my-auto" Style="width:100%; height:100%; object-fit:fill;" />
         </div>
     </MudCarouselItem>
     <MudCarouselItem Transition="transition">
@@ -25,6 +25,9 @@
         </div>
     </MudCarouselItem>
 </MudCarousel>
+
+<!-- Divider Line -->
+<MudDivider Style="margin: 40px 0;" />
 
 <h1>Top Categories</h1>
 
@@ -136,11 +139,11 @@
 <MudGrid Justify="Justify.Center" Spacing="3" Style="margin-top: 20px;">
     <!-- Category 1 -->
     <MudItem xs="6" sm="3">
-        <MudCard Style="border-radius: 12px;">
-            <MudCardMedia Image="images/Furniture.jpg" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
+        <MudCard>
+            <MudCardMedia Image="images/Apple.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
             <MudCardActions Style="justify-content: center;">
                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(FurnitureCategoryId)">
-                    Furniture
+                    Apple
                 </MudButton>
             </MudCardActions>
         </MudCard>
@@ -148,11 +151,11 @@
 
     <!-- Category 2 -->
     <MudItem xs="6" sm="3">
-        <MudCard Style="border-radius: 12px;">
-            <MudCardMedia Image="images/Electronics.jpg" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
+        <MudCard>
+            <MudCardMedia Image="images/Samsung.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
             <MudCardActions Style="justify-content: center;">
                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ElectronicsCategoryId)">
-                    Electronics
+                    Samsung
                 </MudButton>
             </MudCardActions>
         </MudCard>
@@ -160,11 +163,11 @@
 
     <!-- Category 3 -->
     <MudItem xs="6" sm="3">
-        <MudCard Style="border-radius: 12px;">
-            <MudCardMedia Image="images/Clothing.jpg" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
+        <MudCard>
+            <MudCardMedia Image="images/Nike.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
             <MudCardActions Style="justify-content: center;">
                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ClothingCategoryId)">
-                    Clothing
+                    Nike
                 </MudButton>
             </MudCardActions>
         </MudCard>
@@ -174,11 +177,11 @@
 <MudGrid Justify="Justify.Center" Spacing="3" Style="margin-top: 20px;">
     <!-- Category 1 -->
     <MudItem xs="6" sm="3">
-        <MudCard Style="border-radius: 12px;">
-            <MudCardMedia Image="images/Furniture.jpg" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
+        <MudCard>
+            <MudCardMedia Image="images/Adidas.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
             <MudCardActions Style="justify-content: center;">
                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(FurnitureCategoryId)">
-                    Smartphones
+                    Adidas
                 </MudButton>
             </MudCardActions>
         </MudCard>
@@ -186,11 +189,11 @@
 
     <!-- Category 2 -->
     <MudItem xs="6" sm="3">
-        <MudCard Style="border-radius: 12px;">
-            <MudCardMedia Image="images/Electronics.jpg" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
+        <MudCard>
+            <MudCardMedia Image="images/Zara.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
             <MudCardActions Style="justify-content: center;">
                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ElectronicsCategoryId)">
-                    Headsets
+                    Zara
                 </MudButton>
             </MudCardActions>
         </MudCard>
@@ -198,16 +201,19 @@
 
     <!-- Category 3 -->
     <MudItem xs="6" sm="3">
-        <MudCard Style="border-radius: 12px;">
-            <MudCardMedia Image="images/Clothing.jpg" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
+        <MudCard>
+            <MudCardMedia Image="images/Dell.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
             <MudCardActions Style="justify-content: center;">
                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ClothingCategoryId)">
-                    Jewelry
+                    Dell
                 </MudButton>
             </MudCardActions>
         </MudCard>
     </MudItem>
 </MudGrid>
+
+<!-- Divider Line -->
+<MudDivider Style="margin: 40px 0;" />
 
 @code {
     private bool arrows = true;
