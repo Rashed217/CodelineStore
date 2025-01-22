@@ -53,6 +53,7 @@ h1:focus {
 .top-row {
     display: flex;
     flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+    background-color: #ecebf4ff;
 }
 
 @media (max-width: 768px) {
