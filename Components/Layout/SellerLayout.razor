@@ -10,96 +10,61 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<div class="page d-flex">
-    <!-- Sidebar: This will appear on the left side -->
-    <div class="sidebar bg-dark text-white p-3" style="width: 250px; height: 100vh; position: fixed;">
-        <!-- Sidebar Content -->
-        <div class="navbar navbar-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand text-white" href="">CodelineStore</a>
-            </div>
-        </div>
+<!-- Layout Structure -->
+<MudLayout>
+    <!-- AppBar -->
+    <MudAppBar Elevation="1" Style="height: 75px;">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <img src="images/CodelineStore.jpg" alt="Logo" style="height: 85px; width: 215px; margin-left: 15px" />
+        <MudSpacer />
 
-        <!-- Sidebar Navigation -->
-        <div class="nav-scrollable">
-            <nav class="flex-column">
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link text-white" href="" Match="NavLinkMatch.All">
-                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Add Products
-                    </NavLink>
-                </div>
+        
 
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link text-white" href="counter">
-                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> View Products
-                    </NavLink>
-                </div>
+        <!-- User Info or Buttons -->
+        @if (UserState.IsLoggedIn)
+        {
+            <MudText Typo="Typo.subtitle1" Class="mr-3">Hello, @UserState.UserName</MudText>
+            <MudButton Variant="Variant.Outlined" OnClick="@LogOut" Style="background-color: #ffffffff; color: rebeccapurple; border-color: #ffffffff;" Class="ml-3">Log Out</MudButton>
+        }
+        else
+        {
+            <MudMenu Label="Register" Variant="Variant.Filled" Dense="true"
+                     Style="background-color: #ffffffff; color: rebeccapurple; border-color: #ffffffff; border-radius: 4px; margin-top:15px">
+                <MudMenuItem Label="Register as Customer" Href="/SignUpUser" />
+                <MudMenuItem Label="Register as Seller" Href="/SignUpSeller" />
+            </MudMenu>
+            <MudButton Variant="Variant.Outlined" OnClick="@NavigateToLogin" Style="background-color: #ffffffff; color: rebeccapurple; border-color: #ffffffff; margin-top:15px" Class="ml-3">
+                Login
+            </MudButton>
+        }
+    </MudAppBar>
 
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link text-white" href="counter">
-                        <span class="bi bi-person-circle-nav-menu" aria-hidden="true"></span> Profile
-                    </NavLink>
-                </div>
-            </nav>
-        </div>
-    </div>
+    <!-- Drawer -->
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Style="margin-top:10px">
+        <SellerNav />
+    </MudDrawer>
 
-    <!-- Main Content: This will be to the right of the sidebar -->
-    <main class="flex-grow-1" style="margin-left: 250px; padding: 20px;">
-        <div class="top-row px-4 d-flex justify-between align-items-center" style="height: 90px;">
-            <!-- Logo -->
-            <div class="d-flex justify-start align-items-center gap-4" style="flex-grow: 1;">
-                <img src="images/CodelineStore.jpg" alt="Logo" style="height: 90px; width: 225px;" />
-
-                <!-- Search TextField and Search Button Group -->
-                <div class="d-flex align-items-center" style="max-width: 400px; width: 100%; gap: 10px;">
-                    <MudTextField @bind-Value="SearchQuery"
-                                  Label="Search"
-                                  Variant="Variant.Outlined"
-                                  Style="border-radius: 25px; flex-grow: 1; padding: 5px; background-color: rgba(255, 255, 255, 0.2); color: black; height: 55px;"
-                                  LabelStyle="font-size: 16px; padding-top: 0px;" />
-                    <MudIconButton Icon="fas fa-search"
-                                   Color="Color.Primary"
-                                   OnClick="NavigateToSearchResults"
-                                   Style="border-radius: 50%; width: 50px; height: 50px; border: 1px solid #7372769f;" />
-                </div>
-            </div>
-
-            <!-- User Info or Buttons -->
-            <div>
-                @if (UserState.IsLoggedIn)
-                {
-                    <div class="d-flex align-items-center">
-                        <MudText Typo="Typo.subtitle1" Class="mr-2">Hello, @UserState.UserName</MudText>
-                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@LogOut">Log Out</MudButton>
-                    </div>
-                }
-                else
-                {
-                    <MudButtonGroup Color="Color.Primary" Size="Size.Large" Variant="Variant.Outlined">
-                        <MudMenu Label="Register" Color="Color.Primary" Size="Size.Large" Variant="Variant.Outlined">
-                            <MudMenuItem Label="Register as Customer" Href="/SignUpUser" />
-                            <MudMenuItem Label="Register as Seller" Href="/SignUpSeller" />
-                        </MudMenu>
-                        <MudButton OnClick="@NavigateToLogin">Login</MudButton>
-                    </MudButtonGroup>
-                }
-            </div>
-        </div>
-
+    <!-- Main Content -->
+    <MudMainContent>
         <article class="content px-4">
             @Body
         </article>
-    </main>
-</div>
+    </MudMainContent>
+</MudLayout>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div>
+
+
+
 
 @code {
+    private bool _drawerOpen = true;
+  
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
     private void NavigateToLogin()
     {
         Navigation.NavigateTo("/Login");
@@ -111,13 +76,5 @@
         Navigation.NavigateTo("/");
     }
 
-    private string SearchQuery { get; set; }
-
-    private void NavigateToSearchResults()
-    {
-        if (!string.IsNullOrEmpty(SearchQuery))
-        {
-            Navigation.NavigateTo($"/search?query={SearchQuery}");
-        }
-    }
+    
 }
