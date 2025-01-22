@@ -1,0 +1,90 @@
+﻿@page "/Categories"
+@inject NavigationManager Navigation
+@inject ApplicationDbContext DbContext
+@inject IMapper mapper
+@inject IWebHostEnvironment WebHostEnvironment
+
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using AutoMapper
+@using CodelineStore.DTOs.SellerDTOs
+@using CodelineStore.DTOs.UserDTOs
+@using CodelineStore.Data
+@using CodelineStore.DTOs
+@using CodelineStore.Data.Model
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.EntityFrameworkCore
+
+<MudContainer>
+    <MudGrid>
+        @if (categories != null && categoryIcons != null && categories.Any() && categoryIcons.Any())
+        {
+            @foreach (var item in Enumerable.Range(0, Math.Min(categories.Count, categoryIcons.Count)))
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <MudCard Class="mx-auto my-2" Style="width: 100%; max-width: 350px;">
+                        <MudCardMedia Image="@categoryIcons[item]" Style="object-fit: cover; height: 300px; width: 100%;" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">@categories[item]</MudText>
+                            <MudText Typo="Typo.body2">Explore our @categories[item] collection.</MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Text" Color="Color.Primary">View Category</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        }
+        else if ((categories == null || !categories.Any()) || (categoryIcons == null || !categoryIcons.Any()))
+        {
+            <MudText Typo="Typo.h6" Align="Align.Center" Class="mt-4">No categories available.</MudText>
+        }
+        else
+        {
+            <MudText Typo="Typo.h6" Align="Align.Center" Class="mt-4">Data mismatch: categories and icons do not align.</MudText>
+        }
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private List<string> categories;
+    private List<string> categoryIcons;
+
+    protected override void OnInitialized()
+    {
+        // Initialize categories and their respective icons
+        categories = new List<string>
+        {
+            "Groceries",
+            "Electronics",
+            "Clothing",
+            "Books",
+            "Toys",
+            "Sports",
+            "Beauty",
+            "Automotive",
+            "Health"
+        };
+
+        categoryIcons = new List<string>
+        {
+            "images/groceries.png",
+            "images/electronics.png",
+            "images/clothing.png",
+            "images/books.png",
+            "images/toys.png",
+            "images/sports.png",
+            "images/beauty.png",
+            "images/automotive.png",
+            "images/health.png"
+        };
+
+        // Ensure both lists have the same count
+        if (categories.Count != categoryIcons.Count)
+        {
+            // Log or handle the mismatch gracefully
+            categories = categories.Take(Math.Min(categories.Count, categoryIcons.Count)).ToList();
+            categoryIcons = categoryIcons.Take(Math.Min(categories.Count, categoryIcons.Count)).ToList();
+        }
+    }
+}

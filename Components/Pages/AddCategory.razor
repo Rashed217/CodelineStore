@@ -1,0 +1,189 @@
+﻿@page "/AddCategory"
+@inject NavigationManager Navigation
+@inject ApplicationDbContext DbContext
+@inject IMapper mapper
+@inject IWebHostEnvironment WebHostEnvironment
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using AutoMapper
+@using CodelineStore.Data
+@using CodelineStore.Data.Model
+@using Microsoft.EntityFrameworkCore
+@using MudBlazor
+
+
+<MudLayout>
+    @if (showSuccessAlert)
+    {
+        <MudAlert Severity="Severity.Success" Class="mb-3">Category Added successfully</MudAlert>
+    }
+    <!-- Add Category Form -->
+    <MudContainer Class="d-flex justify-content-center align-items-center" Style="width: 100%; height: 80px; margin-top: 20px;">
+        <MudTextField @bind-Value="CategoryName"
+
+        Variant="Variant.Outlined"
+        Placeholder="Enter category name"
+        Style="max-width: 400px; margin-right: 10px;"
+        LabelStyle="font-size: 16px;" />
+        <MudButton Variant="Variant.Filled"
+        Color="Color.Primary"
+        OnClick="SubmitCategory"
+        Style="height: 45px; align-self: center;">
+            Add Category
+        </MudButton>
+    </MudContainer>
+    <MudContainer Class="mt-4">
+        <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary">
+            @Message
+        </MudText>
+    </MudContainer>
+
+    <!-- Display All Categories -->
+    <MudContainer Class="mt-4">
+        <MudTable Items="@Categories" Dense="true" Hover="true">
+            <HeaderContent>
+                <MudTh>Category ID</MudTh>
+                <MudTh>Category Name</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Category ID">@context.CatId</MudTd>
+                <MudTd DataLabel="Category Name">@context.Name</MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Warning" OnClick="@(() => EditCategory(context))">
+                        Edit
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="@(() => DeleteCategory(context.CatId))" Class="ml-2">
+                        Delete
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText Typo="Typo.subtitle1" Align="Align.Center">No categories available.</MudText>
+            </NoRecordsContent>
+        </MudTable>
+    </MudContainer>
+
+    <!-- Edit Dialog -->
+    <MudDialog @bind-IsOpen="@IsEditDialogOpen">
+        <MudDialogContent>
+            <MudTextField @bind-Value="EditingCategory.Name"
+            Label="Category Name"
+            Variant="Variant.Outlined"
+            Style="width: 100%;" />
+        </MudDialogContent>
+        <MudDialogActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveCategory">Save</MudButton>
+            <MudButton Variant="Variant.Outlined" OnClick="CancelEdit">Cancel</MudButton>
+        </MudDialogActions>
+    </MudDialog>
+</MudLayout>
+
+@code {
+    private bool showSuccessAlert = false;
+    private string CategoryName { get; set; } = string.Empty;
+    private string Message { get; set; } = string.Empty;
+    private List<Category> Categories = new();
+
+    private bool IsEditDialogOpen { get; set; }
+    private Category EditingCategory { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategoriesAsync();
+    }
+
+    private async Task SubmitCategory()
+    {
+        if (string.IsNullOrWhiteSpace(CategoryName))
+        {
+            Message = "Category name cannot be empty.";
+            return;
+        }
+
+        try
+        {
+            var category = new Category
+            {
+                Name = CategoryName
+            };
+
+            DbContext.Categories.Add(category);
+            await DbContext.SaveChangesAsync();
+            await LoadCategoriesAsync();
+
+            showSuccessAlert = true;
+            CategoryName = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Message = $"Error: Could not add category. Details: {ex.Message}";
+        }
+    }
+
+    private async Task LoadCategoriesAsync()
+    {
+        try
+        {
+            Categories = await DbContext.Categories.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Message = $"Error: Could not load categories. Details: {ex.Message}";
+        }
+    }
+
+    private void EditCategory(Category category)
+    {
+        EditingCategory = new Category
+        {
+            CatId = category.CatId,
+            Name = category.Name
+        };
+        IsEditDialogOpen = true;
+    }
+
+    private async Task SaveCategory()
+    {
+        try
+        {
+            var category = await DbContext.Categories.FindAsync(EditingCategory.CatId);
+            if (category != null)
+            {
+                category.Name = EditingCategory.Name;
+                await DbContext.SaveChangesAsync();
+                await LoadCategoriesAsync();
+                IsEditDialogOpen = false;
+                Message = $"Category '{EditingCategory.Name}' updated successfully!";
+            }
+        }
+        catch (Exception ex)
+        {
+            Message = $"Error: Could not update category. Details: {ex.Message}";
+        }
+    }
+
+    private void CancelEdit()
+    {
+        IsEditDialogOpen = false;
+    }
+
+    private async Task DeleteCategory(int categoryId)
+    {
+        try
+        {
+            var category = await DbContext.Categories.FindAsync(categoryId);
+            if (category != null)
+            {
+                DbContext.Categories.Remove(category);
+                await DbContext.SaveChangesAsync();
+                await LoadCategoriesAsync();
+                Message = $"Category '{category.Name}' deleted successfully!";
+            }
+        }
+        catch (Exception ex)
+        {
+            Message = $"Error: Could not delete category. Details: {ex.Message}";
+        }
+    }
+}
