@@ -4,21 +4,24 @@
 
 @using CodelineStore.Services
 
-@* Required for themes, popovers, dialogs, and snackbars *@
+@* Required *@
 <MudThemeProvider />
 <MudPopoverProvider />
+@* Needed for dialogs *@
 <MudDialogProvider />
+@* Needed for snackbars *@
 <MudSnackbarProvider />
+
 
 <!-- Layout Structure -->
 <MudLayout>
     <!-- AppBar -->
-    <MudAppBar Elevation="1" Style="height: 75px;">
+    <MudAppBar Elevation="1" Style="height: 85px;">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <img src="images/CodelineStore.jpg" alt="Logo" style="height: 85px; width: 215px; margin-left: 15px" />
+        <img src="images/CodelineStore.jpg" alt="Logo" style="height: 85px; width: 211px; margin-left: 15px" />
         <MudSpacer />
 
-        
+       
 
         <!-- User Info or Buttons -->
         @if (UserState.IsLoggedIn)
@@ -51,6 +54,14 @@
         </article>
     </MudMainContent>
 </MudLayout>
+
+
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
 
 
 
