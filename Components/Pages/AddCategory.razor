@@ -44,19 +44,12 @@
             <HeaderContent>
                 <MudTh>Category ID</MudTh>
                 <MudTh>Category Name</MudTh>
-                <MudTh>Actions</MudTh>
+               
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Category ID">@context.CatId</MudTd>
                 <MudTd DataLabel="Category Name">@context.Name</MudTd>
-                <MudTd DataLabel="Actions">
-                    <MudButton Variant="Variant.Outlined" Color="Color.Warning" OnClick="@(() => EditCategory(context))">
-                        Edit
-                    </MudButton>
-                    <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="@(() => DeleteCategory(context.CatId))" Class="ml-2">
-                        Delete
-                    </MudButton>
-                </MudTd>
+              
             </RowTemplate>
             <NoRecordsContent>
                 <MudText Typo="Typo.subtitle1" Align="Align.Center">No categories available.</MudText>
@@ -74,7 +67,7 @@
         </MudDialogContent>
         <MudDialogActions>
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveCategory">Save</MudButton>
-            <MudButton Variant="Variant.Outlined" OnClick="CancelEdit">Cancel</MudButton>
+          
         </MudDialogActions>
     </MudDialog>
 </MudLayout>
@@ -133,15 +126,7 @@
         }
     }
 
-    private void EditCategory(Category category)
-    {
-        EditingCategory = new Category
-        {
-            CatId = category.CatId,
-            Name = category.Name
-        };
-        IsEditDialogOpen = true;
-    }
+   
 
     private async Task SaveCategory()
     {
@@ -163,27 +148,5 @@
         }
     }
 
-    private void CancelEdit()
-    {
-        IsEditDialogOpen = false;
-    }
 
-    private async Task DeleteCategory(int categoryId)
-    {
-        try
-        {
-            var category = await DbContext.Categories.FindAsync(categoryId);
-            if (category != null)
-            {
-                DbContext.Categories.Remove(category);
-                await DbContext.SaveChangesAsync();
-                await LoadCategoriesAsync();
-                Message = $"Category '{category.Name}' deleted successfully!";
-            }
-        }
-        catch (Exception ex)
-        {
-            Message = $"Error: Could not delete category. Details: {ex.Message}";
-        }
-    }
 }

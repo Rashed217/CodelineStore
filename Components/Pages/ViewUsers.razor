@@ -1,0 +1,65 @@
+﻿@page "/ViewUsers"
+@inject ApplicationDbContext DbContext
+@inject NavigationManager Navigation
+
+@using CodelineStore.Data.Model
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@using MudBlazor
+
+<MudLayout>
+    <!-- Display All Users -->
+    <MudContainer Class="mt-4">
+        <MudTable Items="@Users" Dense="true" Hover="true">
+            <HeaderContent>
+                <MudTh>User ID</MudTh>
+                <MudTh>Username</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Role</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="User ID">@context.UserId</MudTd>
+                <MudTd DataLabel="Username">@context.Username</MudTd>
+                <MudTd DataLabel="Email">@context.Email</MudTd>
+                <MudTd DataLabel="Role">@context.Role</MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="@(() => ViewProfile(context.UserId))">
+                        View Profile
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText Typo="Typo.subtitle1" Align="Align.Center">No users found.</MudText>
+            </NoRecordsContent>
+        </MudTable>
+    </MudContainer>
+</MudLayout>
+
+@code {
+    private List<User> Users = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsersAsync();
+    }
+
+    private async Task LoadUsersAsync()
+    {
+        try
+        {
+            Users = await DbContext.Users.ToListAsync();
+            Console.WriteLine("Users loaded successfully.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading users: {ex.Message}");
+        }
+    }
+
+    private void ViewProfile(int userId)
+    {
+        // Navigate to a profile details page for the selected user
+        Navigation.NavigateTo($"/UserProfile/{userId}");
+    }
+}
