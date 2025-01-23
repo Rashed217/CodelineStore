@@ -1,4 +1,8 @@
-﻿
+﻿@using CodelineStore.Data.Model
+@using Microsoft.EntityFrameworkCore
+
+@inject ApplicationDbContext DbContext
+
 <MudPaper Width="250px" Class="d-inline-flex py-3" Elevation="0">
     <MudNavMenu Class="mud-width-full">
         <MudText Typo="Typo.h5" Class="px-4">Customer Menu</MudText>
@@ -6,39 +10,60 @@
 
         <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
 
-        <!-- Brands Navigation Group -->
+        <!-- Brands (Sellers) Navigation Group -->
         <MudNavGroup Title="Brands" Icon="@Icons.Material.Filled.Shop2">
-            <MudNavLink Href="/Brands/Apple" Icon="@Icons.Material.Filled.PhoneIphone">
-                Apple
-            </MudNavLink>
-            <MudNavLink Href="/Brands/Samsung" Icon="@Icons.Material.Filled.Smartphone">
-                Samsung
-            </MudNavLink>
-            <MudNavLink Href="/Brands/Nike" Icon="@Icons.Material.Filled.FitnessCenter">
-                Nike
-            </MudNavLink>
-            <MudNavLink Href="/Brands/Adidas" Icon="@Icons.Material.Filled.SportsSoccer">
-                Adidas
-            </MudNavLink>
+            @if (Brands?.Any() == true)
+            {
+                @foreach (var seller in Brands)
+                {
+                    <MudNavLink Href="@($"/Brand/{seller.SId}")" Icon="@Icons.Material.Filled.Shop">
+                        @seller.User.Username
+                    </MudNavLink>
+                }
+            }
+            else
+            {
+                <MudText Typo="Typo.body2" Color="Color.Secondary">No brands available</MudText>
+            }
         </MudNavGroup>
 
         <!-- Categories Navigation Group -->
         <MudNavGroup Title="Categories" Icon="@Icons.Material.Filled.Category">
-            <MudNavLink Href="/Category/Electronics" Icon="@Icons.Material.Filled.ElectricalServices">
-                Electronics
-            </MudNavLink>
-            <MudNavLink Href="/Category/Furniture" Icon="@Icons.Material.Filled.Weekend">
-                Furniture
-            </MudNavLink>
-            <MudNavLink Href="/Category/Clothing" Icon="@Icons.Material.Filled.Checkroom">
-                Clothing
-            </MudNavLink>
+            @if (Categories?.Any() == true)
+            {
+                @foreach (var category in Categories)
+                {
+                    <MudNavLink Href="@($"/Category/{category.CatId}")" Icon="@Icons.Material.Filled.Category">
+                        @category.Name
+                    </MudNavLink>
+                }
+            }
+            else
+            {
+                <MudText Typo="Typo.body2" Color="Color.Secondary">No categories available</MudText>
+            }
         </MudNavGroup>
 
+        <!-- User Navigation Group -->
         <MudNavGroup Title="User" Icon="@Icons.Material.Filled.VerifiedUser" Expanded="true">
             <MudNavLink Href="/ViewOrders" Icon="@Icons.Material.Filled.ShoppingCart" IconColor="Color.Success">View Orders</MudNavLink>
-            <MudNavLink Href="/ViewUserProfile" Icon="@Icons.Material.Filled.People" IconColor="Color.Info">View Profile</MudNavLink>
+            <MudNavLink Href="/UserProfile" Icon="@Icons.Material.Filled.People" IconColor="Color.Info">View Profile</MudNavLink>
         </MudNavGroup>
 
     </MudNavMenu>
 </MudPaper>
+
+@code {
+    private List<Seller> Brands { get; set; } = new();
+    private List<Category> Categories { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetching brands (sellers) and categories from the database
+        Brands = await DbContext.Sellers
+            .Include(s => s.User) // Include User data for the Seller
+            .ToListAsync();
+
+        Categories = await DbContext.Categories.ToListAsync();
+    }
+}
