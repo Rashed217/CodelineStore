@@ -1,0 +1,33 @@
+﻿@using MudBlazor
+@inject NavigationManager Navigation
+
+
+<MudPaper Width="250px" Class="d-inline-flex py-3" Elevation="0">
+    <MudNavMenu Class="mud-width-full">
+        <MudText Typo="Typo.h5" Class="px-4">Admin Menu</MudText>
+        <MudDivider Class="my-2" />
+
+        <MudDialogProvider />
+    <!-- Add Category -->
+    <MudNavLink Href="/AddCategory" Match="NavLinkMatch.All" Class="mb-2">
+        <MudIcon Icon="@Icons.Material.Filled.Category" Class="mr-2" /> Add Category
+    </MudNavLink>
+
+    <!-- Manage Categories -->
+    <MudNavLink Href="/ManageCategories" Match="NavLinkMatch.All" Class="mb-2">
+        <MudIcon Icon="@Icons.Material.Filled.Category" Class="mr-2" /> Manage Categories
+    </MudNavLink>
+
+    <MudNavLink Href="/ViewUsers" Match="NavLinkMatch.All" Class="mb-2">
+        <MudIcon Icon="@Icons.Material.Filled.People" Class="mr-2" /> View Users
+    </MudNavLink>
+
+    <!-- Analytics -->
+    <MudNavLink Href="/Analytics" Match="NavLinkMatch.All" Class="mb-2">
+        <MudIcon Icon="@Icons.Material.Filled.Analytics" Class="mr-2" /> Analytics
+    </MudNavLink>
+       
+
+   
+</MudNavMenu>
+</MudPaper>

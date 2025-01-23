@@ -1,0 +1,109 @@
+﻿@page "/Analytics"
+@inject ApplicationDbContext DbContext
+@using MudBlazor
+@using Microsoft.EntityFrameworkCore
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    <MudGrid>
+        <!-- Summary Cards -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h6" Align="Align.Center">Total Users</MudText>
+                    <MudText Typo="Typo.h4" Align="Align.Center">@UserCount</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h6" Align="Align.Center">Total Products</MudText>
+                    <MudText Typo="Typo.h4" Align="Align.Center">@ProductCount</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h6" Align="Align.Center">Total Categories</MudText>
+                    <MudText Typo="Typo.h4" Align="Align.Center">@CategoryCount</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+    <MudDivider Class="my-4" />
+
+    <!-- Pie Chart: Product Distribution by Category -->
+    <MudPaper Class="p-4">
+        <MudText Typo="Typo.h5" Align="Align.Center">Product Distribution by Category</MudText>
+        <MudChart ChartType="ChartType.Pie" Labels="@CategoryLabels" DataSets="@CategoryData" />
+    </MudPaper>
+
+    <MudDivider Class="my-4" />
+
+    <!-- Bar Chart: Monthly Order Growth -->
+    <MudPaper Class="p-4">
+        <MudText Typo="Typo.h5" Align="Align.Center">Monthly Order Growth</MudText>
+        <MudChart ChartType="ChartType.Bar" Labels="@MonthlyLabels" DataSets="@OrderGrowthData" />
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private int UserCount { get; set; }
+    private int ProductCount { get; set; }
+    private int CategoryCount { get; set; }
+    private List<string> CategoryLabels { get; set; } = new();
+    private List<int> CategoryData { get; set; } = new();
+    private List<string> MonthlyLabels { get; set; } = new();
+    private List<int> OrderGrowthData { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            UserCount = await DbContext.Users.CountAsync();
+            ProductCount = await DbContext.Products.CountAsync();
+            CategoryCount = await DbContext.Categories.CountAsync();
+
+            // Debug: Print counts
+            Console.WriteLine($"Users: {UserCount}, Products: {ProductCount}, Categories: {CategoryCount}");
+
+            // Fetch Category Distribution
+            var categoryDistribution = await DbContext.Categories
+                .Include(c => c.Products)
+                .Select(c => new { c.Name, ProductCount = c.Products.Count })
+                .ToListAsync();
+
+            CategoryLabels = categoryDistribution.Select(cd => cd.Name).ToList();
+            CategoryData = categoryDistribution.Select(cd => cd.ProductCount).ToList();
+
+            // Debug: Log category data
+            Console.WriteLine("Category Labels: " + string.Join(", ", CategoryLabels));
+            Console.WriteLine("Category Data: " + string.Join(", ", CategoryData));
+
+            // Fetch Monthly Order Growth
+            var monthlyOrderGrowth = await DbContext.Orders
+                .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
+                .Select(g => new
+                {
+                    Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM yyyy"),
+                    Count = g.Count()
+                })
+                .OrderBy(g => g.Month)
+                .ToListAsync();
+
+            MonthlyLabels = monthlyOrderGrowth.Select(g => g.Month).ToList();
+            OrderGrowthData = monthlyOrderGrowth.Select(g => g.Count).ToList();
+
+            // Debug: Log monthly growth data
+            Console.WriteLine("Monthly Labels: " + string.Join(", ", MonthlyLabels));
+            Console.WriteLine("Order Growth Data: " + string.Join(", ", OrderGrowthData));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching data: {ex.Message}");
+        }
+    }
+}
+

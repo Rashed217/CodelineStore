@@ -1,0 +1,127 @@
+﻿@page "/EditProduct/{id:int}"
+@using CodelineStore.Data.Model
+@using CodelineStore.Services
+@inject IProductService ProductService
+@inject ICompoundService CompoundService
+@inject NavigationManager Navigation
+@inject ICategoryService CategoryService
+@using CodelineStore.Components.Layout
+@layout SellerLayout
+
+<h3>Edit Product</h3>
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="editProduct" OnValidSubmit="SaveProduct">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="productName">Product Name</label>
+            <InputText id="productName" class="form-control" @bind-Value="editProduct.Name" />
+        </div>
+
+        <div class="mb-3">
+            <label for="productPrice">Price</label>
+            <InputNumber id="productPrice" class="form-control" @bind-Value="editProduct.Price" />
+        </div>
+
+        <div class="mb-3">
+            <label for="productDescription">Description</label>
+            <InputTextArea id="productDescription" class="form-control" @bind-Value="editProduct.Description" />
+        </div>
+
+        <div class="mb-3">
+            <label for="productCategory">Category</label>
+            <InputText id="productCategory" class="form-control" Value="@selectedCategoryName" Disabled="true" />
+        </div>
+
+        <div class="mb-3">
+            <label for="productImage">Product Image</label>
+            <InputFile id="productImage" class="form-control" OnChange="HandleImageUpload" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    private Product product;
+    private Product editProduct;
+    private string imagePath;
+    private string selectedCategoryName;
+    private bool isLoading = true; // Loading flag
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Start the fetch process to load the product for editing
+            Console.WriteLine($"Fetching product with ID: {id}");  // Debugging log
+
+            // Fetch product by ID
+            product = await ProductService.GetProductByIdAsync(id);
+
+            // Proceed directly with editing without checking the user state
+            if (product != null)
+            {
+                editProduct = new Product
+                    {
+                        PId = product.PId,
+                        Name = product.Name,
+                        Price = product.Price,
+                        Description = product.Description,
+                        CategoryId = product.CategoryId
+                    };
+                
+            }
+            else
+            {
+                Console.Error.WriteLine($"Product with ID {id} not found.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching product: {ex.Message}");
+        }
+        finally
+        {
+            // Set isLoading to false once fetching is done (either successful or failed)
+            isLoading = false;
+            Console.WriteLine("Loading state set to false.");
+        }
+    }
+
+    private void HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        imagePath = $"images/{file.Name}";
+    }
+
+    private async Task SaveProduct()
+    {
+        try
+        {
+            // Add the product or update the existing one (based on logic)
+            var productId = CompoundService.AddProduct(editProduct, imagePath);
+            Navigation.NavigateTo("/ProductList");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error saving product: {ex.Message}");
+        }
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/ProductList");
+    }
+}

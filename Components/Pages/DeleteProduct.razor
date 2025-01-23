@@ -1,0 +1,86 @@
+﻿@page "/DeleteProduct/{id:int}"
+@using CodelineStore.Data.Model
+@using CodelineStore.Services
+@inject IProductService ProductService
+@inject ICompoundService CompoundService
+@inject NavigationManager Navigation
+
+<h3>Delete Product</h3>
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else if (product == null)
+{
+    <p>Product not found. Please ensure the product ID is correct.</p>
+}
+else
+{
+    <p>Are you sure you want to delete the product <strong>@product.Name</strong>?</p>
+    <p>Price: @product.Price</p>
+    <p>Description: @product.Description</p>
+
+    <button class="btn btn-danger" @onclick="HandleDeleteProduct">Delete</button>
+    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+}
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    private Product product;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Console.WriteLine($"Fetching product with ID: {id}");
+
+            // Fetch product by ID
+            product = await ProductService.GetProductByIdAsync(id);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching product: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;  // Set loading to false when the process is done
+        }
+    }
+
+    private async Task HandleDeleteProduct()
+    {
+        try
+        {
+            if (product != null)
+            {
+                // Use CompoundService to delete the product
+                bool success = await CompoundService.DeleteProduct(product);
+
+                if (success)
+                {
+                    // If the product is successfully deleted, navigate to the product list
+                    Navigation.NavigateTo("/ProductList");
+                }
+                else
+                {
+                    Console.Error.WriteLine("Product deletion failed.");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error deleting product: {ex.Message}");
+        }
+    }
+
+    private void Cancel()
+    {
+        // Navigate back to the product list without deleting
+        Navigation.NavigateTo("/ProductList");
+    }
+
+}

@@ -62,7 +62,9 @@ else
                         <button class="btn btn-primary btn-sm" @onclick="() => EditProduct(product.PId)">Edit</button>
 
                         <!-- Delete Button -->
-                        <button class="btn btn-danger btn-sm" @onclick="() => ShowDeleteConfirmation(product.PId)">Delete</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteProduct(product.PId)">Delete</button>
+
+
                     </td>
                 </tr>
             }
@@ -148,6 +150,8 @@ else
         // Navigate to an Edit Product page with the product ID
         Navigation.NavigateTo($"/EditProduct/{id}");
     }
+
+
 
     private async Task DeleteProduct(int id)
     {
