@@ -1,7 +1,10 @@
-﻿@using CodelineStore.Data.Model
+﻿@using CodelineStore.DTOs.CategoryDTOs
+@using CodelineStore.Data.Model
+@using CodelineStore.Services
 @using Microsoft.EntityFrameworkCore
 
-@inject ApplicationDbContext DbContext
+@inject ISellerService sellerService
+@inject ICategoryService categoryService
 
 <MudPaper Width="250px" Class="d-inline-flex py-3" Elevation="0">
     <MudNavMenu Class="mud-width-full">
@@ -12,37 +15,53 @@
 
         <!-- Brands (Sellers) Navigation Group -->
         <MudNavGroup Title="Brands" Icon="@Icons.Material.Filled.Shop2">
-            @if (Brands?.Any() == true)
-            {
-                @foreach (var seller in Brands)
-                {
-                    <MudNavLink Href="@($"/Brand/{seller.SId}")" Icon="@Icons.Material.Filled.Shop">
-                        @seller.User.Username
-                    </MudNavLink>
-                }
-            }
-            else
-            {
-                <MudText Typo="Typo.body2" Color="Color.Secondary">No brands available</MudText>
-            }
+            <MudNavLink Href="/Brands/Apple">
+                Apple
+            </MudNavLink>
+            <MudNavLink Href="/Brands/Samsung">
+                Samsung
+            </MudNavLink>
+            <MudNavLink Href="/Brands/Nike">
+                Nike
+            </MudNavLink>
+            <MudNavLink Href="/Brands/Adidas">
+                Adidas
+            </MudNavLink>
         </MudNavGroup>
 
-        <!-- Categories Navigation Group -->
         <MudNavGroup Title="Categories" Icon="@Icons.Material.Filled.Category">
-            @if (Categories?.Any() == true)
-            {
-                @foreach (var category in Categories)
-                {
-                    <MudNavLink Href="@($"/Category/{category.CatId}")" Icon="@Icons.Material.Filled.Category">
-                        @category.Name
-                    </MudNavLink>
-                }
-            }
-            else
-            {
-                <MudText Typo="Typo.body2" Color="Color.Secondary">No categories available</MudText>
-            }
+            <MudNavLink Href="/Categories">
+                Show All Categories
+            </MudNavLink>
+            <MudNavLink Href="/Category/Groceries">
+                Groceries
+            </MudNavLink>
+            <MudNavLink Href="/Category/Electronics">
+                Electronics
+            </MudNavLink>
+            <MudNavLink Href="/Category/Clothing">
+                Clothing
+            </MudNavLink>
+            <MudNavLink Href="/Category/Books">
+                Books
+            </MudNavLink>
+            <MudNavLink Href="/Category/Toys">
+                Toys
+            </MudNavLink>
+            <MudNavLink Href="/Category/Sports">
+                Sports
+            </MudNavLink>
+            <MudNavLink Href="/Category/Beauty">
+                Beauty
+            </MudNavLink>
+            <MudNavLink Href="/Category/Automotive">
+                Automotive
+            </MudNavLink>
+            <MudNavLink Href="/Category/Health">
+                Health
+            </MudNavLink>
         </MudNavGroup>
+
 
         <!-- User Navigation Group -->
         <MudNavGroup Title="User" Icon="@Icons.Material.Filled.VerifiedUser" Expanded="true">
@@ -52,18 +71,3 @@
 
     </MudNavMenu>
 </MudPaper>
-
-@code {
-    private List<Seller> Brands { get; set; } = new();
-    private List<Category> Categories { get; set; } = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        // Fetching brands (sellers) and categories from the database
-        Brands = await DbContext.Sellers
-            .Include(s => s.User) // Include User data for the Seller
-            .ToListAsync();
-
-        Categories = await DbContext.Categories.ToListAsync();
-    }
-}

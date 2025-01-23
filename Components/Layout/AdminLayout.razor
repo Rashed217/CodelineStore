@@ -1,0 +1,53 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@using MudBlazor
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <!-- AppBar -->
+    <MudAppBar Elevation="1" Style="height: 75px;">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
+        <img src="images/CodelineStore.jpg" alt="Logo" style="height: 85px; width: 215px; margin-left: 15px" />
+        <MudSpacer />
+        <MudButton Variant="Variant.Outlined" OnClick="@LogOut" Style="background-color: #fff; color: rebeccapurple; border-color: #fff;" Class="ml-3">
+            Log Out
+        </MudButton>
+    </MudAppBar>
+
+    <!-- Drawer -->
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <AdminNav />
+    </MudDrawer>
+
+    <!-- Main Content -->
+    <MudMainContent>
+        <article class="content px-4">
+            @Body
+        </article>
+    </MudMainContent>
+
+    <!-- Footer -->
+    <MudFooter Class="pa-4">
+        <MudText Typo="Typo.subtitle2" Align="Align.Center">
+            © 2025 CodelineStore. All rights reserved.
+        </MudText>
+    </MudFooter>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void LogOut()
+    {
+        Navigation.NavigateTo("/Login");
+    }
+}

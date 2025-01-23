@@ -1,0 +1,64 @@
+﻿@page "/EditUser/{UserId:int}"
+@inject ApplicationDbContext DbContext
+@inject NavigationManager Navigation
+@using CodelineStore.Data.Model
+@using Microsoft.EntityFrameworkCore
+
+<MudContainer Class="mt-4">
+    @if (UserDetails == null)
+    {
+        <MudText Typo="Typo.h6" Align="Align.Center">User not found.</MudText>
+    }
+    else
+    {
+        <MudCard Class="mx-auto" Style="max-width: 600px;">
+            <MudCardContent>
+                <MudText Typo="Typo.h5">Edit User</MudText>
+                <MudDivider Class="my-2" />
+                <MudTextField Label="Username" @bind-Value="UserDetails.Username" Variant="Variant.Outlined" Class="mb-2" />
+                <MudTextField Label="Email" @bind-Value="UserDetails.Email" Variant="Variant.Outlined" Class="mb-2" />
+                <MudTextField Label="Role" @bind-Value="UserDetails.Role" Variant="Variant.Outlined" Class="mb-2" />
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveChanges">Save</MudButton>
+                <MudButton Variant="Variant.Outlined" OnClick="Cancel">Cancel</MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public int UserId { get; set; }
+    private User UserDetails { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            UserDetails = await DbContext.Users.FirstOrDefaultAsync(u => u.UserId == UserId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading user details: {ex.Message}");
+        }
+    }
+
+    private async Task SaveChanges()
+    {
+        try
+        {
+            await DbContext.SaveChangesAsync();
+            Console.WriteLine("User updated successfully.");
+            Navigation.NavigateTo("/ViewUsers");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving user details: {ex.Message}");
+        }
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/ViewUsers");
+    }
+}

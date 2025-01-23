@@ -1,0 +1,86 @@
+﻿@page "/ManageCategories"
+@inject NavigationManager Navigation
+@inject ApplicationDbContext DbContext
+@inject IMapper mapper
+@inject IWebHostEnvironment WebHostEnvironment
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using AutoMapper
+@using CodelineStore.Data
+@using CodelineStore.Data.Model
+@using Microsoft.EntityFrameworkCore
+@using MudBlazor
+
+
+<MudLayout>
+    <!-- Display All Categories -->
+    <MudContainer Class="mt-4">
+        <MudTable Items="@Categories" Dense="true" Hover="true">
+            <HeaderContent>
+                <MudTh>Category ID</MudTh>
+                <MudTh>Category Name</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Category ID">@context.CatId</MudTd>
+                <MudTd DataLabel="Category Name">@context.Name</MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="@(() => DeleteCategory(context.CatId))" Class="ml-2">
+                        Delete
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText Typo="Typo.subtitle1" Align="Align.Center">No categories available.</MudText>
+            </NoRecordsContent>
+        </MudTable>
+    </MudContainer>
+</MudLayout>
+
+@code {
+    private List<Category> Categories = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategoriesAsync();
+    }
+
+    private async Task LoadCategoriesAsync()
+    {
+        try
+        {
+            Categories = await DbContext.Categories.ToListAsync();
+            Console.WriteLine("Categories loaded successfully.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading categories: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteCategory(int categoryId)
+    {
+        try
+        {
+            Console.WriteLine($"Attempting to delete Category ID: {categoryId}");
+            var category = await DbContext.Categories.FindAsync(categoryId);
+           
+
+            if (category != null)
+            {
+                DbContext.Categories.Remove(category);
+                await DbContext.SaveChangesAsync();
+                Console.WriteLine($"Category '{category.Name}' deleted successfully.");
+                await LoadCategoriesAsync();
+            }
+            else
+            {
+                Console.WriteLine($"Category with ID {categoryId} not found.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting category: {ex.Message}");
+        }
+    }
+}
