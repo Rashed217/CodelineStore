@@ -1,6 +1,7 @@
 ﻿@page "/SellerInfo/{sellerId:int}"
-@using Microsoft.EntityFrameworkCore
-@inject ApplicationDbContext DbContext
+@using CodelineStore.DTOs.ProductDTO
+@using CodelineStore.DTOs.SellerDTOs
+@inject ISellerService SellerService
 @inject NavigationManager NavigationManager
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
@@ -12,37 +13,44 @@
     {
         <MudText Typo="Typo.h6" Color="Color.Error">Error loading seller information.</MudText>
     }
-    else
+    else if (Seller != null)
     {
-        <MudPaper Class="p-4 mb-4">
+        <MudPaper Class="mb-6" Style="width: 100%; height: 250px; padding: 40px;">
             <div class="d-flex align-items-center">
-                <MudAvatar Size="Size.Large" Alt="Seller Logo" @bind-Src="SellerProfileImage" Class="me-3" />
+                <MudAvatar Size="Size.Large" Alt="Seller Logo" Src="@Seller.SellerProfileImage" Class="me-3" Style="width: 180px; height: 180px;" />
                 <div>
-                    <MudText Typo="Typo.h4">@SellerName</MudText>
-                    <MudText Typo="Typo.body2">Rating: @SellerRating/5</MudText>
+                    <MudText Typo="Typo.h4" Style="align-content=center">@Seller.SellerName</MudText>
+                    <MudText Typo="Typo.h5" Style="align-content=center">Rating: @Seller.SellerRating/5</MudText>
                 </div>
             </div>
         </MudPaper>
 
-        <MudText Typo="Typo.h5" Class="mb-3">Products</MudText>
+    <MudText Typo="Typo.h4" Class="mb-3" Style="align-content=center; margin-bottom=20px;">Products By @Seller.SellerName</MudText>
 
         <MudGrid>
-            @foreach (var product in SellerProducts)
+            @if (Seller.Products?.Any() == true)
             {
-                <MudItem xs="12" sm="6" md="4" lg="3">
-                    <MudCard Class="my-2">
-                        <MudCardMedia Image="@product.MainImagePath" Alt="@product.Name" Class="mud-width-full mud-height-200" />
-                        <MudCardContent>
-                            <MudText Typo="Typo.h6">@product.Name</MudText>
-                            <MudText Typo="Typo.body2">@($"Price: {product.Price:C}")</MudText>
-                        </MudCardContent>
-                        <MudCardActions>
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => NavigateToProductDetails(product.ProductId)">
-                                View Details
-                            </MudButton>
-                        </MudCardActions>
-                    </MudCard>
-                </MudItem>
+                @foreach (var product in Seller.Products)
+                {
+                    <MudItem xs="12" sm="6" md="4" lg="3">
+                        <MudCard Class="my-2">
+                            <MudCardMedia Image="@product.MainImagePath" Alt="@product.Name" Class="mud-width-full mud-height-200" />
+                            <MudCardContent>
+                                <MudText Typo="Typo.h6">@product.Name</MudText>
+                                <MudText Typo="Typo.body2">@($"Price: {product.Price:C}")</MudText>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => NavigateToProductDetails(product.ProductId)">
+                                    View Details
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                }
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-3" Style="margin-left=10px; margin-top=10px;">No products available</MudAlert>
             }
         </MudGrid>
     }
@@ -51,48 +59,17 @@
 @code {
     [Parameter]
     public int SellerId { get; set; }
-
     private bool IsLoading = true;
     private bool HasError = false;
 
-    // Seller Info
-    private string SellerName;
-    private string SellerProfileImage;
-    private int SellerRating;
-
-    // Seller Products
-    private List<ProductDto> SellerProducts = new List<ProductDto>();
+    private SellerOutput Seller;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // Fetch seller info
-            var seller = await DbContext.Sellers
-                .Include(s => s.Products)
-                .ThenInclude(p => p.ProductImages)
-                .FirstOrDefaultAsync(s => s.SId == SellerId);
-
-            if (seller != null)
-            {
-                // Set seller information
-                SellerName = seller.User.Username;
-                SellerProfileImage = seller.ProfileImagePath ?? "https://via.placeholder.com/150"; // Default placeholder
-                SellerRating = seller.SellerRating;
-
-                // Map seller products
-                SellerProducts = seller.Products.Select(p => new ProductDto
-                    {
-                        ProductId = p.PId,
-                        Name = p.Name,
-                        Price = p.Price,
-                        MainImagePath = p.ProductImages.FirstOrDefault()?.imagePath ?? "https://via.placeholder.com/300"
-                    }).ToList();
-            }
-            else
-            {
-                HasError = true;
-            }
+            // Retrieve seller information from the service
+            Seller = await SellerService.GetSellerWithProductsAsync(SellerId);
         }
         catch
         {
@@ -104,18 +81,8 @@
         }
     }
 
-        private void NavigateToProductDetails(int productId)
-        {
-            NavigationManager.NavigateTo($"/Product/{productId}");
-        }
-
-
-    // DTO for product display
-    private class ProductDto
+    private void NavigateToProductDetails(int productId)
     {
-        public int ProductId { get; set; }
-        public string Name { get; set; }
-        public decimal Price { get; set; }
-        public string MainImagePath { get; set; }
+        NavigationManager.NavigateTo($"/Product/{productId}");
     }
 }

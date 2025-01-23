@@ -1,5 +1,6 @@
 ﻿using CodelineStore.Data.Model;
 using CodelineStore.Data.Repositories;
+using CodelineStore.DTOs.ProductDTO;
 
 namespace CodelineStore.Services
 {
@@ -37,6 +38,22 @@ namespace CodelineStore.Services
             }
 
             return product;
+        }
+
+        public async Task<List<ProductDto>> GetProductsByCategoryAsync(int categoryId)
+        {
+            // Fetch products from the repository
+            var products = await _productRepository.GetProductsByCategoryAsync(categoryId);
+
+            // Map the product entities to DTOs
+            return products.Select(p => new ProductDto
+            {
+                ProductId = p.PId,
+                Name = p.Name,
+                Price = p.Price,
+                MainImagePath = p.ProductImages.FirstOrDefault().imagePath
+                                ?? "https://via.placeholder.com/200" // Default image if none exists
+            }).ToList();
         }
 
         public Product CreateProductAsync(Product product)

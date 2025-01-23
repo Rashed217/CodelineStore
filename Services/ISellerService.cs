@@ -6,6 +6,7 @@ namespace CodelineStore.Services
     public interface ISellerService
     {
         void AddSeller(SellerOutput input);
+        Task<SellerOutput> GetSellerWithProductsAsync(int sellerId);
         bool EmailExists(string email);
         IEnumerable<Seller> GetAllSeller();
         Seller GetSellerById(int sellerId);
