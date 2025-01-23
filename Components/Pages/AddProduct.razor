@@ -4,7 +4,6 @@
 @using CodelineStore.Services
 @using Microsoft.EntityFrameworkCore
 @using static MudBlazor.CategoryTypes
-@inject IProductService1 ProductService1
 @inject ICompoundService compoundService
 @inject NavigationManager Navigation
 @inject ApplicationDbContext DbContext
@@ -51,13 +50,7 @@
         }
     </MudSelect>
 
-    <!-- Seller Dropdown (assuming you have a list of sellers) -->
-    <MudSelect T="int" Label="Seller" @bind-Value="newProduct.SellerId" Variant="Variant.Outlined" Class="mb-3">
-        @foreach (var seller in sellers)
-        {
-            <MudSelectItem T="int" Value="@seller.SId">@seller.User.Client</MudSelectItem>
-        }
-    </MudSelect>
+   
 
     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="HandleValidSubmit">
         Add Product
@@ -71,7 +64,6 @@
         <p>&copy; 2025 CodelineStore. All rights reserved.</p>
     </footer>
 </div>
-
 <style>
     .seller-layout {
         padding: 20px;
