@@ -22,10 +22,22 @@ namespace CodelineStore
                   );
 
             builder.Services.AddScoped<UserState>();
-            builder.Services.AddScoped<IUserService, UserService>();
+
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IProductService1, ProductService1>();
             builder.Services.AddScoped<IProductRepository1, ProductRepository1>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IOrderDetailsRepository, OrderDetailsRepository>();
+            builder.Services.AddScoped<IOrderDetailsService, OrderDetailsService>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IClientRepository, ClientRepository>();
+            builder.Services.AddScoped<IClientService, ClientService>();
+            builder.Services.AddScoped<ICompoundService, CompoundService>();
             builder.Services.AddScoped<ISellerService, SellerService>();
             builder.Services.AddScoped<ISellerRepository, SellerRepository>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();

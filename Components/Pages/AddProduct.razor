@@ -5,6 +5,7 @@
 @using Microsoft.EntityFrameworkCore
 @using static MudBlazor.CategoryTypes
 @inject IProductService1 ProductService1
+@inject ICompoundService compoundService
 @inject NavigationManager Navigation
 @inject ApplicationDbContext DbContext
 @using CodelineStore.Components.Layout
@@ -34,7 +35,7 @@
     <MudTextField T="string" Label="Product Name" @bind-Value="newProduct.Name" Variant="Variant.Outlined" Class="mb-3" />
     <MudTextField T="decimal" Label="Price" @bind-Value="newProduct.Price" Variant="Variant.Outlined" Class="mb-3" />
     <MudTextField T="string" Label="Description" @bind-Value="newProduct.Description" Variant="Variant.Outlined" Class="mb-3" />
-    <MudTextField T="string" Label="Image URL" @bind-Value="newProduct.Description" Variant="Variant.Outlined" Class="mb-3" />
+    <MudTextField T="string" Label="Image URL" @bind-Value="imagePath" Variant="Variant.Outlined" Class="mb-3" />
 
     <!-- Stock Input -->
     <MudTextField T="int" Label="Stock" @bind-Value="newProduct.Stock" Variant="Variant.Outlined" Class="mb-3" />
@@ -111,6 +112,7 @@
     private bool showSuccessAlert = false;
     private bool showFailedAlert = false;
     private Product newProduct = new Product();
+    private string imagePath;
     private List<Category> categories = new List<Category>(); // Categories to show in dropdown
     private List<Seller> sellers = new List<Seller>(); // Sellers to show in dropdown
 
@@ -121,13 +123,13 @@
         sellers = await DbContext.Sellers.Include(s => s.User).ToListAsync();
     }
 
-    private async Task HandleValidSubmit()
+    private void HandleValidSubmit()
     {
         try
         {
+            newProduct.SellerId = 1;
             // Add the new product to the database
-            DbContext.Products.Add(newProduct);
-            await DbContext.SaveChangesAsync();
+            compoundService.AddProduct(newProduct, imagePath);
 
             showSuccessAlert = true;
             // Reset the form after successful submission

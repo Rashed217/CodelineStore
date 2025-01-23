@@ -4,8 +4,8 @@ namespace CodelineStore.Services
 {
     public interface IProductService
     {
-        Task<Product> CreateProductAsync(Product product);
-        Task<ProductImages> CreateProductImagesAsync(ProductImages productImages);
+        Product CreateProductAsync(Product product);
+        ProductImages CreateProductImagesAsync(ProductImages productImages);
         Task<bool> DeleteProductAsync(int id);
         Task<List<Product>> GetAllProductsAsync();
         Task<Product> GetProductByIdAsync(int id);

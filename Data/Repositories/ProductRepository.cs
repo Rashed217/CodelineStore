@@ -12,12 +12,12 @@ namespace CodelineStore.Data.Repositories
             _context = context;
         }
 
-        public async Task<List<Product>> GetAllProductsAsync()
+        public List<Product> GetAllProductsAsync()
         {
-            return await _context.Products
+            return  _context.Products
                 .Include(p => p.Seller)
                 .Include(p => p.Category)
-                .ToListAsync();
+                .ToList();
         }
 
         public async Task<Product> GetProductByIdAsync(int id)
@@ -27,10 +27,9 @@ namespace CodelineStore.Data.Repositories
                 .Include(p => p.Category)
                 .FirstOrDefaultAsync(p => p.PId == id);
         }
-        public async Task<ProductImages> CreateProductImagesAsync(ProductImages productImages)
+        public ProductImages CreateProductImagesAsync(ProductImages productImages)
         {
             _context.ProductImages.Add(productImages);
-            await _context.SaveChangesAsync();
             return productImages;
         }
         public async Task<ProductImages> UpdateProductImagesAsync(ProductImages productImages)
@@ -40,10 +39,9 @@ namespace CodelineStore.Data.Repositories
             return productImages;
         }
 
-        public async Task<Product> CreateProductAsync(Product product)
+        public Product CreateProductAsync(Product product)
         {
             _context.Products.Add(product);
-            await _context.SaveChangesAsync();
             return product;
         }
 

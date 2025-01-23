@@ -30,20 +30,32 @@ namespace CodelineStore.Services
 
         public int AddProduct(Product product, string ImgePath)
         {
-            var productOut = _productService.CreateProductAsync(product);
-
-            var productImg = new ProductImages
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                ProductId = product.PId,
-                product = product,
-                imagePath = ImgePath,
-            };
+                try
+                {
+                    var productOut = _productService.CreateProductAsync(product);
 
-            var productImgOut = _productService.CreateProductImagesAsync(productImg);
+                    var productImg = new ProductImages
+                    {
+                        product = productOut,
+                        ProductId = productOut.PId,
+                        imagePath = ImgePath,
+                    };
 
+                    var productImgOut = _productService.CreateProductImagesAsync(productImg);
 
+                    _context.SaveChanges();
+                    transaction.Commit();
 
-            return product.PId;
+                    return product.PId;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new InvalidOperationException("An error occured when adding product " + ex.Message);
+                }
+            }
         }
 
         public async Task<bool> DeleteProduct(Product product)
