@@ -22,9 +22,14 @@ namespace CodelineStore
                   );
 
             builder.Services.AddScoped<UserState>();
-
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IProductService1, ProductService1>();
             builder.Services.AddScoped<IProductRepository1, ProductRepository1>();
+            builder.Services.AddScoped<ISellerService, SellerService>();
+            builder.Services.AddScoped<ISellerRepository, SellerRepository>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             // Add services to the container.
             builder.Services.AddRazorComponents()

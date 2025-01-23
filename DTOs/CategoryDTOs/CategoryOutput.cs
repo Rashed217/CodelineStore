@@ -4,6 +4,5 @@
     {
         public int CId { get; set; }
         public string CategoryName { get; set; }
-        public int Count { get; set; }
     }
 }
