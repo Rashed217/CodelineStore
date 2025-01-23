@@ -1,0 +1,116 @@
+﻿@page "/Product/{productId:int}"
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    @if (IsLoading)
+    {
+        <MudText Typo="Typo.h6">Loading product details...</MudText>
+    }
+    else if (HasError)
+    {
+        <MudText Typo="Typo.h6" Color="Color.Error">Error loading product details.</MudText>
+    }
+    else
+    {
+        <MudPaper Class="p-4">
+            <!-- Product Images -->
+            <MudCard Class="mt-3">
+                <MudCardMedia Src="@(ProductImages.FirstOrDefault() ?? "https://via.placeholder.com/300")" Alt="Product Image" Class="mud-width-full mud-height-300" />
+            </MudCard>
+
+            <!-- Product Info -->
+            <MudText Typo="Typo.h4" Class="mt-3">@ProductName</MudText>
+            <MudText Typo="Typo.body1" Class="mt-1">@Description</MudText>
+            <MudText Typo="Typo.h6" Color="Color.Primary" Class="mt-2">@($"Price: {Price:C}")</MudText>
+            <MudText Typo="Typo.body2" Class="mt-1">Stock: @Stock</MudText>
+            <MudText Typo="Typo.body2" Class="mt-1">Total Sold: @TotalSold</MudText>
+
+            <!-- Seller Info -->
+            <MudDivider Class="my-4" />
+            <div class="d-flex align-items-center">
+                <MudAvatar Size="Size.Large" Alt="Seller Logo" @bind-Src="SellerProfileImage" Class="me-3" />
+                <div>
+                    <MudText Typo="Typo.h6">Seller: @SellerName</MudText>
+                    <MudText Typo="Typo.body2">Rating: @SellerRating/5</MudText>
+                </div>
+            </div>
+
+            <!-- Add to Cart Button -->
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" OnClick="AddToCart">
+                Add to Cart
+            </MudButton>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int ProductId { get; set; }
+
+    private bool IsLoading = true;
+    private bool HasError = false;
+
+    // Product Info
+    private string ProductName;
+    private string Description;
+    private decimal Price;
+    private int Stock;
+    private int TotalSold;
+    private List<string> ProductImages = new List<string>();
+
+    // Seller Info
+    private string SellerName;
+    private string SellerProfileImage;
+    private int SellerRating;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Fetch product info
+            var product = await DbContext.Products
+                .Include(p => p.ProductImages)
+                .Include(p => p.Seller)
+                .ThenInclude(s => s.User)
+                .FirstOrDefaultAsync(p => p.PId == ProductId);
+
+            if (product != null)
+            {
+                // Map product data
+                ProductName = product.Name;
+                Description = product.Description;
+                Price = product.Price;
+                Stock = product.Stock;
+                TotalSold = product.TotalSold;
+                ProductImages = product.ProductImages.Select(img => img.imagePath).ToList();
+
+                // Map seller data
+                SellerName = product.Seller.User.Username;
+                SellerProfileImage = product.Seller.ProfileImagePath ?? "https://via.placeholder.com/150"; // Default placeholder
+                SellerRating = product.Seller.SellerRating;
+            }
+            else
+            {
+                HasError = true;
+            }
+        }
+        catch
+        {
+            HasError = true;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void AddToCart()
+    {
+        // Logic to add the product to the cart
+        Console.WriteLine($"Product {ProductId} added to cart!");
+        // You can implement a proper cart system here
+    }
+}
+

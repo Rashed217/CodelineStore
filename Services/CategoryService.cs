@@ -81,7 +81,7 @@ namespace CodelineStore.Services
             return category;
         }
 
-        public int AddCategory(GategoryInpot categoryInput)
+        public int AddCategory(GategoryInput categoryInput)
         {
             if (string.IsNullOrWhiteSpace(categoryInput.CategoryName))
             {
@@ -97,7 +97,7 @@ namespace CodelineStore.Services
             return _categoryRepository.AddCategory(category);
         }
 
-        public int UpdateCategory(GategoryInpot categoryInput, int id)
+        public int UpdateCategory(GategoryInput categoryInput, int id)
         {
             if (string.IsNullOrWhiteSpace(categoryInput.CategoryName))
             {

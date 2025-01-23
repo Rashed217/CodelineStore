@@ -1,0 +1,256 @@
+<<<<<<< HEAD
+﻿@page "/UserProfile/{UserId:int}"
+@inject ApplicationDbContext DbContext
+@inject NavigationManager Navigation
+@using CodelineStore.Data.Model
+@using Microsoft.EntityFrameworkCore
+@using MudBlazor
+
+<MudContainer Class="mt-4">
+    @if (UserDetails == null)
+    {
+        <MudText Typo="Typo.h6" Align="Align.Center">User not found.</MudText>
+    }
+    else
+    {
+        <MudCard Class="mx-auto" Style="max-width: 600px;">
+            <MudCardContent>
+                <MudText Typo="Typo.h5">User Details</MudText>
+                <MudDivider Class="my-2" />
+                <MudText Typo="Typo.body1"><b>User ID:</b> @UserDetails.UserId</MudText>
+                <MudText Typo="Typo.body1"><b>Username:</b> @UserDetails.Username</MudText>
+                <MudText Typo="Typo.body1"><b>Email:</b> @UserDetails.Email</MudText>
+                <MudText Typo="Typo.body1"><b>Role:</b> @UserDetails.Role</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@EditUser" Class="mr-2">
+                    Edit User
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="ShowDeleteConfirmation">
+                    Delete User
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
+
+    <!-- Delete Confirmation Dialog -->
+    @if (ShowDeleteDialog)
+    {
+        <MudDialog @bind-IsOpen="ShowDeleteDialog" MaxWidth="MaxWidth.Small">
+            <MudDialogTitle>Confirm Deletion</MudDialogTitle>
+            <MudDialogContent>
+                <MudText Typo="Typo.body1">
+                    Are you sure you want to delete this user?
+                </MudText>
+            </MudDialogContent>
+            <MudDialogActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="ConfirmDeleteUser">Delete</MudButton>
+                <MudButton Variant="Variant.Outlined" OnClick="CancelDelete">Cancel</MudButton>
+            </MudDialogActions>
+        </MudDialog>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public int UserId { get; set; }
+    private User UserDetails { get; set; }
+    private bool ShowDeleteDialog = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            UserDetails = await DbContext.Users.FirstOrDefaultAsync(u => u.UserId == UserId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading user details: {ex.Message}");
+        }
+    }
+
+    private void EditUser()
+    {
+        // Navigate to an Edit User page with the user ID
+        Navigation.NavigateTo($"/EditUser/{UserId}");
+    }
+
+    private void ShowDeleteConfirmation()
+    {
+        // Open delete confirmation dialog
+        ShowDeleteDialog = true;
+    }
+
+    private async Task ConfirmDeleteUser()
+    {
+        try
+        {
+            var user = await DbContext.Users.FindAsync(UserId);
+            if (user != null)
+            {
+                DbContext.Users.Remove(user);
+                await DbContext.SaveChangesAsync();
+                Console.WriteLine($"User with ID {UserId} deleted successfully.");
+                Navigation.NavigateTo("/ViewUsers"); // Redirect back to ViewUsers page
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting user: {ex.Message}");
+        }
+        finally
+        {
+            ShowDeleteDialog = false;
+        }
+    }
+
+    private void CancelDelete()
+    {
+        // Close the delete confirmation dialog
+        ShowDeleteDialog = false;
+    }
+}
+=======
+@page "/UserProfile"
+
+@inject NavigationManager Navigation
+@inject ApplicationDbContext DbContext
+@inject IMapper mapper
+
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using AutoMapper
+@using CodelineStore.DTOs.ClientDTOs
+@using CodelineStore.DTOs.UserDTOs
+@using CodelineStore.Data
+@using CodelineStore.DTOs
+@using CodelineStore.Data.Model
+@using Microsoft.EntityFrameworkCore
+@using MudBlazor
+@using static MudBlazor.CategoryTypes
+@using System.Linq;
+
+@if (ProfileUpdated)
+{
+    <MudAlert Severity="Severity.Success" Class="mb-3">Profile updated successfully</MudAlert>
+}
+@if (ClientIDRequiered)
+{
+    <MudAlert Severity="Severity.Error" Class="mb-3">Client ID is required</MudAlert>
+}
+@if (ClientNotFound)
+{
+    <MudAlert Severity="Severity.Error" Class="mb-3">User not found</MudAlert>
+}
+@if (ShowError)
+{
+    <MudAlert Severity="Severity.Error" Class="mb-3">Error Occurred</MudAlert>
+}
+
+
+<MudPaper Class="p-5 mx-auto mud-width-full" MaxWidth="600px" Elevation="3">
+    <MudText Typo="Typo.h4" Class="mb-3">User Profile</MudText>
+    <MudDivider Class="mb-4" />
+
+    <!-- Profile Information -->
+    <MudGrid>
+        <MudItem xs="12">
+            <MudTextField Label="Username" @bind-Value="Client.User.Username" Variant="Variant.Outlined" FullWidth="true" />
+            <MudTextField Label="Email" @bind-Value="Client.User.Email" Variant="Variant.Outlined" FullWidth="true" Class="mt-2" />
+            <MudTextField Label="Phone Number" @bind-Value="Client.PhoneNumber" Variant="Variant.Outlined" FullWidth="true" Class="mt-2" />
+            <MudTextField Label="Address" @bind-Value="Client.Address" Variant="Variant.Outlined" FullWidth="true" Class="mt-2" />
+            <MudTextField Label="Country" @bind-Value="Client.User.Country" Variant="Variant.Outlined" FullWidth="true" Class="mt-2" />
+        </MudItem>
+    </MudGrid>
+
+    <MudDivider Class="my-4" />
+
+    <!-- Update Password -->
+    <MudExpansionPanel Text="Change Password">
+        <MudTextField Label="New Password" @bind-Value="Client.User.Password" Variant="Variant.Outlined" FullWidth="true" InputType="InputType.Password" />
+    </MudExpansionPanel>
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-3" OnClick="SaveChanges">Save Changes</MudButton>
+</MudPaper>
+
+@code {
+    public bool ProfileUpdated = false;
+    public bool ClientIDRequiered = false;
+    public bool ClientNotFound = false;
+    public bool ShowError = false;
+    private updateClientDTO Client = new updateClientDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate loading user data
+        var clientId = 1; // Replace with actual user ID
+        var client = await DbContext.Users
+            .Where(u => u.UserId == clientId)
+            .Select(u => new updateClientDTO
+                {
+                    ClientId = u.UserId,
+                    PhoneNumber = u.Client.PhoneNumber,
+                    Address = u.Client.Address,
+                    User = new UserInput
+                    {
+                        Username = u.Username,
+                        Email = u.Email,
+                        Country = u.Country,
+                    }
+                })
+            .FirstOrDefaultAsync();
+
+        if (client != null)
+        {
+            Client = client;
+        }
+    }
+
+    private async Task SaveChanges()
+    {
+        try
+        {
+            if (Client.ClientId == null)
+            {
+                ClientIDRequiered = true;
+                return;
+            }
+
+            var user = await DbContext.Users.FindAsync(Client.ClientId);
+
+            if (user == null)
+            {
+                ClientNotFound = false;
+                return;
+            }
+
+            // Update fields
+            user.Username = Client.User.Username ?? user.Username;
+            user.Email = Client.User.Email ?? user.Email;
+            user.Client.PhoneNumber = Client.PhoneNumber ?? user.Client.PhoneNumber;
+            user.Client.Address = Client.Address ?? user.Client.Address;
+            user.Country = Client.User.Country ?? user.Country;
+
+            // Update password if provided
+            if (!string.IsNullOrWhiteSpace(Client.User.Password))
+            {
+                user.Password = HashPassword(Client.User.Password); // Replace with your hashing logic
+            }
+
+            await DbContext.SaveChangesAsync();
+            ProfileUpdated = true;
+        }
+        catch (Exception )
+        {
+            ShowError = true;
+        }
+    }
+
+    private string HashPassword(string password)
+    {
+        // Replace this with a proper hashing algorithm like BCrypt
+        return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(password));
+    }
+}
+
+
+>>>>>>> e56ba8ea13d7defeba693fdafa4f424b349b7955

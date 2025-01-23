@@ -1,0 +1,72 @@
+@page "/ViewOrders"
+@using CodelineStore.Data.Model
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<h1>Your Orders</h1>
+
+@if (Orders == null)
+{
+    <p>Loading your orders...</p>
+}
+else if (!Orders.Any())
+{
+    <p>No orders found.</p>
+}
+else
+{
+    @foreach (var order in Orders)
+    {
+        <div class="card my-3">
+            <div class="card-header">
+                <h5>Order ID: @order.OId</h5>
+                <p>Order Date: @order.OrderDate.ToShortDateString()</p>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var detail in order.OrderDetails)
+                        {
+                            <tr>
+                                <td>@detail.product.Name</td>
+                                <td>@detail.Quantity</td>
+                                <td>@detail.UnitPrice:C</td>
+                                <td>@detail.Subtotal:C</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <h6>Total: @order.OrderDetails.Sum(d => d.Subtotal):C</h6>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    private List<Order> Orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch orders with details and products for the logged-in user
+        Orders = await DbContext.Orders
+            .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.product) // Include product details
+            .Where(o => o.client.UserId == GetLoggedInUserId()) // Replace with logic to get current user ID
+            .ToListAsync();
+    }
+
+    private int GetLoggedInUserId()
+    {
+        // Replace this with your actual logic to get the logged-in user's ID
+        return 1; // Example: Static user ID
+    }
+}

@@ -14,7 +14,7 @@ namespace CodelineStore.Services
 
         public async Task<List<Product>> GetAllProductsAsync()
         {
-            var products = await _productRepository.GetAllProductsAsync();
+            var products =  _productRepository.GetAllProductsAsync();
             if (products == null || !products.Any())
             {
                 throw new InvalidOperationException("No products found.");
@@ -39,18 +39,18 @@ namespace CodelineStore.Services
             return product;
         }
 
-        public async Task<Product> CreateProductAsync(Product product)
+        public Product CreateProductAsync(Product product)
         {
             ValidateProduct(product);
 
             // Check if a product with the same name already exists 
-            var existingProducts = await _productRepository.GetAllProductsAsync();
+            var existingProducts = _productRepository.GetAllProductsAsync();
             if (existingProducts.Any(p => p.Name.Equals(product.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new InvalidOperationException($"A product with the name '{product.Name}' already exists.");
             }
 
-            return await _productRepository.CreateProductAsync(product);
+            return _productRepository.CreateProductAsync(product);
         }
 
         public async Task<Product> UpdateProductAsync(Product product)
@@ -93,16 +93,11 @@ namespace CodelineStore.Services
             return success;
         }
 
-        public async Task<ProductImages> CreateProductImagesAsync(ProductImages productImages)
+        public ProductImages CreateProductImagesAsync(ProductImages productImages)
         {
             if (productImages == null)
             {
                 throw new ArgumentNullException(nameof(productImages), "Product image cannot be null.");
-            }
-
-            if (productImages.ProductId <= 0)
-            {
-                throw new ArgumentException("Invalid product ID for the image.");
             }
 
             if (string.IsNullOrWhiteSpace(productImages.imagePath))
@@ -111,7 +106,7 @@ namespace CodelineStore.Services
             }
 
             // Perform additional validation or checks if necessary
-            return await _productRepository.CreateProductImagesAsync(productImages);
+            return _productRepository.CreateProductImagesAsync(productImages);
         }
 
         public async Task<ProductImages> UpdateProductImagesAsync(ProductImages productImages)

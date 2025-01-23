@@ -1,0 +1,121 @@
+﻿@page "/SellerInfo/{sellerId:int}"
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    @if (IsLoading)
+    {
+        <MudText Typo="Typo.h6">Loading seller information...</MudText>
+    }
+    else if (HasError)
+    {
+        <MudText Typo="Typo.h6" Color="Color.Error">Error loading seller information.</MudText>
+    }
+    else
+    {
+        <MudPaper Class="p-4 mb-4">
+            <div class="d-flex align-items-center">
+                <MudAvatar Size="Size.Large" Alt="Seller Logo" @bind-Src="SellerProfileImage" Class="me-3" />
+                <div>
+                    <MudText Typo="Typo.h4">@SellerName</MudText>
+                    <MudText Typo="Typo.body2">Rating: @SellerRating/5</MudText>
+                </div>
+            </div>
+        </MudPaper>
+
+        <MudText Typo="Typo.h5" Class="mb-3">Products</MudText>
+
+        <MudGrid>
+            @foreach (var product in SellerProducts)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <MudCard Class="my-2">
+                        <MudCardMedia Image="@product.MainImagePath" Alt="@product.Name" Class="mud-width-full mud-height-200" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h6">@product.Name</MudText>
+                            <MudText Typo="Typo.body2">@($"Price: {product.Price:C}")</MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => NavigateToProductDetails(product.ProductId)">
+                                View Details
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int SellerId { get; set; }
+
+    private bool IsLoading = true;
+    private bool HasError = false;
+
+    // Seller Info
+    private string SellerName;
+    private string SellerProfileImage;
+    private int SellerRating;
+
+    // Seller Products
+    private List<ProductDto> SellerProducts = new List<ProductDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Fetch seller info
+            var seller = await DbContext.Sellers
+                .Include(s => s.Products)
+                .ThenInclude(p => p.ProductImages)
+                .FirstOrDefaultAsync(s => s.SId == SellerId);
+
+            if (seller != null)
+            {
+                // Set seller information
+                SellerName = seller.User.Username;
+                SellerProfileImage = seller.ProfileImagePath ?? "https://via.placeholder.com/150"; // Default placeholder
+                SellerRating = seller.SellerRating;
+
+                // Map seller products
+                SellerProducts = seller.Products.Select(p => new ProductDto
+                    {
+                        ProductId = p.PId,
+                        Name = p.Name,
+                        Price = p.Price,
+                        MainImagePath = p.ProductImages.FirstOrDefault()?.imagePath ?? "https://via.placeholder.com/300"
+                    }).ToList();
+            }
+            else
+            {
+                HasError = true;
+            }
+        }
+        catch
+        {
+            HasError = true;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+        private void NavigateToProductDetails(int productId)
+        {
+            NavigationManager.NavigateTo($"/Product/{productId}");
+        }
+
+
+    // DTO for product display
+    private class ProductDto
+    {
+        public int ProductId { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public string MainImagePath { get; set; }
+    }
+}
