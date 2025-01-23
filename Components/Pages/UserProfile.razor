@@ -91,11 +91,11 @@
         {
             Client = client;
         }
-
+    }
     private void ShowDeleteConfirmation()
     {
         // Open delete confirmation dialog
-        ShowDeleteDialog = true;
+        ShowError = true;
     }
 
     private async Task SaveChanges()
@@ -132,7 +132,7 @@
             await DbContext.SaveChangesAsync();
             ProfileUpdated = true;
         }
-        catch (Exception )
+        catch (Exception)
         {
             ShowError = true;
         }
@@ -143,6 +143,7 @@
         // Replace this with a proper hashing algorithm like BCrypt
         return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(password));
     }
-}
 
 
+    
+    }

@@ -1,5 +1,6 @@
 ﻿@using CodelineStore.DTOs.CategoryDTOs
 @using CodelineStore.Data.Model
+@using CodelineStore.Services
 @using Microsoft.EntityFrameworkCore
 
 @inject ISellerService sellerService
@@ -29,16 +30,38 @@
         </MudNavGroup>
 
         <MudNavGroup Title="Categories" Icon="@Icons.Material.Filled.Category">
+            <MudNavLink Href="/Categories">
+                Show All Categories
+            </MudNavLink>
+            <MudNavLink Href="/Category/Groceries">
+                Groceries
+            </MudNavLink>
             <MudNavLink Href="/Category/Electronics">
                 Electronics
-            </MudNavLink>
-            <MudNavLink Href="/Category/Furniture">
-                Furniture
             </MudNavLink>
             <MudNavLink Href="/Category/Clothing">
                 Clothing
             </MudNavLink>
+            <MudNavLink Href="/Category/Books">
+                Books
+            </MudNavLink>
+            <MudNavLink Href="/Category/Toys">
+                Toys
+            </MudNavLink>
+            <MudNavLink Href="/Category/Sports">
+                Sports
+            </MudNavLink>
+            <MudNavLink Href="/Category/Beauty">
+                Beauty
+            </MudNavLink>
+            <MudNavLink Href="/Category/Automotive">
+                Automotive
+            </MudNavLink>
+            <MudNavLink Href="/Category/Health">
+                Health
+            </MudNavLink>
         </MudNavGroup>
+
 
         <!-- User Navigation Group -->
         <MudNavGroup Title="User" Icon="@Icons.Material.Filled.VerifiedUser" Expanded="true">
