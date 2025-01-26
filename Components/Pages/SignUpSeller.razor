@@ -178,11 +178,11 @@ private async Task RegisterSeller()
             showFailedAlert = false;
 
             var subject = "Welcome to CodelineStore - Seller Registration Confirmation";
-            var body = $@"
-            Dear {userInput.Username},
-            We are pleased to inform you that your registration as a seller on CodelineStore has been successfully completed. Your account has been created, and you may now log in to manage your store.
-            Best regards,
-            CodelineStore Team/";
+                var body = $"Dear {userInput.Username},\n\n" +
+                            "Your registration as a seller on CodelineStore has been successfully completed.\n\n" +
+                            "Your account has been created, and you may now log in to manage your store.\n\n" +
+                            "Best regards,\nCodelineStore Team";
+
 
             await EmailService.SendEmailAsync(userInput.Email, subject, body);
 
