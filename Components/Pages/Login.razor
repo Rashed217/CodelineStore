@@ -2,6 +2,8 @@
 @inject NavigationManager Navigation
 @inject ApplicationDbContext DbContext
 @inject UserState UserState
+@inject IUserService UserService
+@inject IAuthService AuthService
 
 @using System.ComponentModel.DataAnnotations
 @using CodelineStore.Services
@@ -19,9 +21,9 @@
             }
 
             <MudForm @ref="form" IsValid="@success">
-                <MudTextField @bind-Value="email" Label="Email" Required="true" RequiredError="Email is required!"
+                <MudTextField @bind-Value="Email" Label="Email" Required="true" RequiredError="Email is required!"
                               Validation="@(new EmailAddressAttribute() { ErrorMessage = "Invalid email address" })" Class="mb-3" />
-                <MudTextField @bind-Value="password" Label="Password" InputType="InputType.Password" Required="true"
+                <MudTextField @bind-Value="Password" Label="Password" InputType="InputType.Password" Required="true"
                               RequiredError="Password is required!" Class="mb-3" />
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="LoginUser">
                     Login
@@ -35,36 +37,37 @@
     private bool success;
     private bool showError = false;
     private MudForm form;
-    private string email;
-    private string password;
+    private string Email;
+    private string Password;
+    private string Message;
+    private string AlertClass;
 
-    private async Task LoginUser()
+    private void LoginUser()
     {
-        if (form.IsValid)
+        Log.Information($"Received login request from Email: {Email}");
+        var user = UserService.Login(Email, Password);
+
+        if (user == null)
         {
-            try
-            {
-                var user = await DbContext.Users
-                    .Where(u => u.Email == email)
-                    .FirstOrDefaultAsync();
+            Log.Error($"Login Failed due to user wrong credinials");
 
-                if (user != null && VerifyPassword(password, user.Password))
-                {
-                    // Set the logged-in user's name in UserState
-                    UserState.LogIn(user.Username);
+            Message = "Login failed. Please check your credentials.";
+            AlertClass = "alert-danger";
+        }
+        else
+        {
+            Log.Debug($"Login credinials successed ");
+            Message = "Login successful!";
+            AlertClass = "alert-success";
 
-                    // Redirect to the homepage or dashboard
-                    Navigation.NavigateTo("/");
-                }
-                else
-                {
-                    showError = true;
-                }
-            }
-            catch (Exception)
-            {
-                showError = true;
-            }
+            AuthService.GenerateToken(user);
+            if (user.Role == "Client")
+                Navigation.NavigateTo("/Home");
+            else if (user.Role == "Seller")
+                Navigation.NavigateTo("/SellerPortal");
+            else
+                Navigation.NavigateTo("/AddCategory");
+
         }
     }
 

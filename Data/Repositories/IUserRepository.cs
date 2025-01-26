@@ -13,6 +13,7 @@ namespace CodelineStore.Data.Repositories
         User GetUserByName(string userName);
         IEnumerable<User> GetUserByRole(string roleName);
         bool IsValidRole(string roleName);
+        User Login(string email, string password);
         User UpdateUser(User user);
     }
 }

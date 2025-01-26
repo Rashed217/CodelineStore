@@ -86,5 +86,11 @@ namespace CodelineStore.Data.Repositories
                 throw new InvalidOperationException($"Database error: {ex.Message}");
             }
         }
+
+        public User Login(string email, string password)
+        {
+
+            return _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
+        }
     }
 }

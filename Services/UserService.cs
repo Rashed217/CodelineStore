@@ -58,6 +58,7 @@ namespace CodelineStore.Services
             return user;
         }
 
+
         public UserOutput GetUserData(string? userName, int? uid)
         {
             User user = null;
@@ -112,6 +113,12 @@ namespace CodelineStore.Services
             }
             return (output);
         }
+
+        public User Login(string email, string password)
+        {
+            return _userRepository.Login(email, password);
+        }
+
         public bool EmailExists(string email)
         {
             return _userRepository.EmailExists(email);
