@@ -9,48 +9,54 @@ using CodelineStore.Helpers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Http;
+using Serilog;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodelineStore.Services
 {
     public class AuthService : IAuthService
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly JwtSettings _jwtSettings;
         private readonly IJSRuntime _jsRuntime;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
-        public AuthService(JwtSettings jwtSettings, IJSRuntime jsRuntime, AuthenticationStateProvider authenticationStateProvider)
+        private readonly ApplicationDbContext _context;
+        public AuthService(JwtSettings jwtSettings, IJSRuntime jsRuntime, AuthenticationStateProvider authenticationStateProvider, IHttpContextAccessor httpContextAccessor)
         {
             _jwtSettings = jwtSettings;
             _jsRuntime = jsRuntime;
             _authenticationStateProvider = authenticationStateProvider;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public JwtTokenResponse GenerateToken(User user)
         {
             var claims = new[]
             {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new Claim(ClaimTypes.Role, user.Role) // Example role
-        };
+        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim(ClaimTypes.Role, user.Role)
+    };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(_jwtSettings.ExpirationInMinutes),
+                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes),
                 signingCredentials: creds
             );
 
-
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-            SaveTokenToCookie(tokenString);
-            ((CustomAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(tokenString);
 
-            JwtTokenResponse response;
-            response = new JwtTokenResponse { Token = tokenString, Expiration = DateTime.Now.AddMinutes(_jwtSettings.ExpirationInMinutes) };
-            return response;
+            return new JwtTokenResponse
+            {
+                Token = tokenString,
+                Expiration = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes)
+            };
         }
+
 
         public async Task SaveTokenToCookie(string token)
         {
@@ -66,6 +72,43 @@ namespace CodelineStore.Services
             await _jsRuntime.InvokeVoidAsync("eval", $"document.cookie = 'authToken={token}; {cookieOptions.ToString()}';");
         }
 
-    }
+        public int? GetLoggedInSellerId()
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
 
+            if (httpContext == null)
+            {
+                Log.Error("HttpContext is null. Cannot retrieve seller ID.");
+                throw new InvalidOperationException("HttpContext is not available.");
+            }
+
+            // Retrieve the User ID from claims (assuming NameIdentifier is the user ID)
+            var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                Log.Error("NameIdentifier claim is missing in the token.");
+                return null;
+            }
+
+            if (!int.TryParse(userIdClaim.Value, out var userId))
+            {
+                Log.Error("Failed to parse UserId claim value.");
+                return null;
+            }
+
+            Log.Information($"UserId claim retrieved: {userId}");
+
+            // Query the database to get the Seller ID associated with the User ID
+            var seller = _context.Sellers.FirstOrDefault(s => s.UserId == userId);
+            if (seller == null)
+            {
+                Log.Error($"No seller found for UserId: {userId}");
+                return null;
+            }
+
+            Log.Information($"SellerId retrieved: {seller.User.Seller.SId}");
+            return seller.User.Seller.SId;
+        }
+    }
 }
