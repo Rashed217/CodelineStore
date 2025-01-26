@@ -1,6 +1,7 @@
 ﻿@page "/ViewUsers"
 @inject ApplicationDbContext DbContext
 @inject NavigationManager Navigation
+@inject IDialogService DialogService
 
 @using CodelineStore.Data.Model
 @using Microsoft.EntityFrameworkCore
@@ -60,6 +61,6 @@
     private void ViewProfile(int userId)
     {
         // Navigate to a profile details page for the selected user
-        Navigation.NavigateTo($"/UserProfile/{userId}");
+        Navigation.NavigateTo($"/AdminUserProfile/{userId}");
     }
 }
