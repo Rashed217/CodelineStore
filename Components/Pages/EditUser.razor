@@ -11,13 +11,14 @@
     }
     else
     {
-        <MudCard Class="mx-auto" Style="max-width: 600px;">
+        <MudCard Class="mx-auto" Style="max-width: 5000px;">
             <MudCardContent>
-                <MudText Typo="Typo.h5">Edit User</MudText>
+                <MudText Typo="Typo.h5">Edit User Info</MudText>
                 <MudDivider Class="my-2" />
                 <MudTextField Label="Username" @bind-Value="UserDetails.Username" Variant="Variant.Outlined" Class="mb-2" />
                 <MudTextField Label="Email" @bind-Value="UserDetails.Email" Variant="Variant.Outlined" Class="mb-2" />
                 <MudTextField Label="Role" @bind-Value="UserDetails.Role" Variant="Variant.Outlined" Class="mb-2" />
+                <MudTextField Label="Password" @bind-Value="UserDetails.Password" Variant="Variant.Outlined" Class="mb-2" />
             </MudCardContent>
             <MudCardActions>
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveChanges">Save</MudButton>
