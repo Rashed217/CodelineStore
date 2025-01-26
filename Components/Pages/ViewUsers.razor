@@ -1,8 +1,10 @@
 ﻿@page "/ViewUsers"
+@layout AdminLayout
 @inject ApplicationDbContext DbContext
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
 
+@using CodelineStore.Components.Layout
 @using CodelineStore.Data.Model
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.EntityFrameworkCore.Metadata.Internal

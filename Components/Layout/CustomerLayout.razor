@@ -1,0 +1,97 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@inject UserState UserState
+
+@using CodelineStore.Services
+
+@* Required *@
+<MudThemeProvider />
+<MudPopoverProvider />
+@* Needed for dialogs *@
+<MudDialogProvider />
+@* Needed for snackbars *@
+<MudSnackbarProvider />
+
+
+<!-- Layout Structure -->
+<MudLayout>
+    <!-- AppBar -->
+    <MudAppBar Elevation="1" Style="height: 75px;">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
+        <img src="images/CodelineStore.jpg" alt="Logo" style="height: 85px; width: 211px; margin-left: 15px;" />
+        <MudSpacer />
+
+        <!-- Search Field and Button -->
+        <div class="d-flex justify-content-center align-items-center" style="width: 100%; margin-left: 15px;">
+            <MudIconButton Icon="fas fa-search"
+                           Color="Color.Primary"
+                           OnClick="NavigateToSearchResults"
+                           Style="background-color: #ffffff; color: rebeccapurple; border-radius: 50%; width: 40px; height: 40px;" />
+            <MudTextField @bind-Value="SearchQuery"
+                          Placeholder="Search products..."
+                          Variant="Variant.Outlined"
+                          Style="background-color: #ffffff; border-radius: 6px; height: 45px; max-width: 400px; flex-grow: 1; margin-left: 10px;"
+                          LabelStyle="font-size: 16px;" />
+        </div>
+
+        <!-- User Info -->
+        @if (UserState.IsLoggedIn)
+        {
+            <MudText Typo="Typo.subtitle1" Class="mr-3">Hello, @UserState.UserName</MudText>
+            <MudButton Variant="Variant.Outlined" OnClick="@LogOut" Style="background-color: #ffffff; color: rebeccapurple;" Class="ml-3">Log Out</MudButton>
+        }
+        else
+        {
+            <MudButton Variant="Variant.Outlined" OnClick="@NavigateToLogin" Style="background-color: #ffffff; color: rebeccapurple;" Class="ml-3">Log In</MudButton>
+        }
+    </MudAppBar>
+
+    <!-- Drawer -->
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Style="margin-top: 10px;">
+        <CustomerNav />
+    </MudDrawer>
+
+    <!-- Main Content -->
+    <MudMainContent>
+        <article class="content px-4">
+            @Body
+        </article>
+    </MudMainContent>
+</MudLayout>
+
+<!-- Error UI -->
+<div id="blazor-error-ui">
+    <MudAlert Severity="Severity.Error">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+    </MudAlert>
+</div>
+
+@code {
+    private bool _drawerOpen = true;
+    private string SearchQuery { get; set; }
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void NavigateToLogin()
+    {
+        Navigation.NavigateTo("/Login");
+    }
+
+    private void LogOut()
+    {
+        UserState.LogOut();
+        Navigation.NavigateTo("/Login");
+    }
+
+    private void NavigateToSearchResults()
+    {
+        if (!string.IsNullOrEmpty(SearchQuery))
+        {
+            Navigation.NavigateTo($"/search?query={SearchQuery}");
+        }
+    }
+}

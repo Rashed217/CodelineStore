@@ -1,4 +1,5 @@
 ﻿@page "/AddCategory"
+@layout AdminLayout
 @inject NavigationManager Navigation
 @inject ApplicationDbContext DbContext
 @inject IMapper mapper
@@ -6,6 +7,7 @@
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
 @using AutoMapper
+@using CodelineStore.Components.Layout
 @using CodelineStore.Data
 @using CodelineStore.Data.Model
 @using Microsoft.EntityFrameworkCore
@@ -18,7 +20,7 @@
         <MudAlert Severity="Severity.Success" Class="mb-3">Category Added successfully</MudAlert>
     }
     <!-- Add Category Form -->
-    <MudContainer Class="d-flex justify-content-center align-items-center" Style="width: 100%; height: 80px; margin-top: 20px;">
+    <MudContainer Class="d-flex justify-content-center align-items-center" Style="width: 100%; height: 240px;"> <!-- Increased height -->
         <MudTextField @bind-Value="CategoryName"
 
         Variant="Variant.Outlined"
