@@ -53,6 +53,7 @@ namespace CodelineStore.Services
             };
         }
 
+
         public bool EmailExists(string email)
         {
             return _sellerRepository.EmailExists(email);
@@ -87,21 +88,22 @@ namespace CodelineStore.Services
             if (input == null)
                 throw new ArgumentNullException(nameof(input), "Client information is missing.");
 
-            if (input.SellerId <= 0)
-                throw new ArgumentException("Invalid client ID.");
+            //if (input.SellerId <= 0)
+            //    throw new ArgumentException("Invalid client ID.");
 
-            var user = _userService.GetUserById(input.SellerId);
+            var user = _userService.GetUserById(input.userId);
             if (user == null)
                 throw new KeyNotFoundException($"No user found with ID {input.SellerId}.");
 
-            if (!user.Role.Equals("client", StringComparison.OrdinalIgnoreCase))
+            if (!user.Role.Equals("Seller", StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentException("The provided user ID does not belong to a client.");
 
             var seller = new Seller
             {
-                SId = user.Seller.SId,
+                User = user,
+                UserId = user.UserId,
                 SellerRating = (int)input.SellerRating,
-
+                ProfileImagePath = input.SellerProfileImage
             };
 
             _sellerRepository.AddSeller(seller);

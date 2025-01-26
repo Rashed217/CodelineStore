@@ -2,6 +2,7 @@
 @inject NavigationManager Navigation
 @inject ApplicationDbContext DbContext
 @inject IMapper mapper
+@inject ISendEmail EmailService
 
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
@@ -105,21 +106,21 @@
             {
                 // Map user-specific data
                 var userEntity = new User
-                    {
-                        Username = userInput.Username,
-                        Email = userInput.Email,
-                        Password = HashPassword(userInput.Password), // Ensure to hash the password
-                        Country = userInput.Country,
-                        Role = userInput.Role
-                    };
+                {
+                    Username = userInput.Username,
+                    Email = userInput.Email,
+                    Password = HashPassword(userInput.Password), // Ensure to hash the password
+                    Country = userInput.Country,
+                    Role = userInput.Role
+                };
 
                 // Map client-specific data
                 var clientEntity = new Client
-                    {
-                        PhoneNumber = userInput.PhoneNumber,
-                        Address = userInput.Address,
-                        User = userEntity // Establish relationship between User and Client
-                    };
+                {
+                    PhoneNumber = userInput.PhoneNumber,
+                    Address = userInput.Address,
+                    User = userEntity // Establish relationship between User and Client
+                };
 
                 // Add user to Users table
                 DbContext.Users.Add(userEntity);
@@ -129,6 +130,15 @@
 
                 // Save changes to the database
                 await DbContext.SaveChangesAsync();
+
+                var subject = "Welcome to CodelineStore - Registration Confirmation";
+                var body = $"Dear {userInput.Username},\n\n" +
+                           "Thank you for registering with CodelineStore!\n\n" +
+                           "We're excited to have you on board. Your account has been successfully created, and you're now ready to manage your store.\n\n" +
+                           "If you have any questions or need assistance, feel free to reach out to us.\n\n" +
+                           "Best regards,\nThe CodelineStore Team";
+
+                await EmailService.SendEmailAsync(userInput.Email, subject, body);
 
                 // Show success alert and reset the form
                 showSuccessAlert = true;
@@ -157,12 +167,11 @@
 
     private string[] _country =
     {
-    "United States", "Canada", "United Kingdom", "Germany", "France",
-    "Italy", "Spain", "Australia", "India", "China",
-    "Japan", "Brazil", "Russia", "South Africa", "Mexico",
-    "South Korea", "Turkey", "Saudi Arabia", "Argentina", "Indonesia",
-    "United Arab Emirates", "Palestine", "Qatar", "Kuwait", "Oman",
-    "Bahrain", "Jordan", "Lebanon", "Egypt", "Iraq"
+        "United States", "Canada", "United Kingdom", "Germany", "France",
+        "Italy", "Spain", "Australia", "India", "China",
+        "Japan", "Brazil", "Russia", "South Africa", "Mexico",
+        "South Korea", "Turkey", "Saudi Arabia", "Argentina", "Indonesia",
+        "United Arab Emirates", "Palestine", "Qatar", "Kuwait", "Oman",
+        "Bahrain", "Jordan", "Lebanon", "Egypt", "Iraq"
     };
-
 }

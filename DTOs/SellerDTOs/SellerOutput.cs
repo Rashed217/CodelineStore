@@ -4,6 +4,7 @@ namespace CodelineStore.DTOs.SellerDTOs
 {
     public class SellerOutput
     {
+        public int userId {  get; set; }
         public int SellerId { get; set; }
         public string SellerName { get; set; }
         public string SellerProfileImage { get; set; }
