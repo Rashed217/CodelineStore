@@ -1,5 +1,6 @@
 ﻿using CodelineStore.Data.Model;
 using CodelineStore.Data.Repositories;
+using CodelineStore.DTOs.ProductDTO;
 using CodelineStore.DTOs.SellerDTOs;
 namespace CodelineStore.Services
 {
@@ -27,6 +28,31 @@ namespace CodelineStore.Services
             return seller;
         }
 
+        public async Task<SellerOutput> GetSellerWithProductsAsync(int sellerId)
+        {
+            var seller = await _sellerRepository.GetSellerWithProductsAsync(sellerId);
+
+            if (seller == null)
+            {
+                throw new InvalidOperationException($"Seller with ID {sellerId} not found.");
+            }
+
+            return new SellerOutput
+            {
+                SellerId = seller.SId,
+                SellerName = seller.User.Username,
+                SellerProfileImage = seller.ProfileImagePath ?? "https://via.placeholder.com/150",
+                SellerRating = seller.SellerRating,
+                Products = seller.Products.Select(p => new ProductDto
+                {
+                    ProductId = p.PId,
+                    Name = p.Name,
+                    Price = p.Price,
+                    MainImagePath = p.ProductImages.FirstOrDefault()?.imagePath ?? "https://via.placeholder.com/300"
+                }).ToList()
+            };
+        }
+
         public bool EmailExists(string email)
         {
             return _sellerRepository.EmailExists(email);
@@ -50,7 +76,7 @@ namespace CodelineStore.Services
 
             return new SellerOutput
             {
-                SId = seller.SId,
+                SellerId = seller.SId,
                 SellerRating = seller.SellerRating,
 
             };
@@ -61,12 +87,12 @@ namespace CodelineStore.Services
             if (input == null)
                 throw new ArgumentNullException(nameof(input), "Client information is missing.");
 
-            if (input.SId <= 0)
+            if (input.SellerId <= 0)
                 throw new ArgumentException("Invalid client ID.");
 
-            var user = _userService.GetUserById(input.ID);
+            var user = _userService.GetUserById(input.SellerId);
             if (user == null)
-                throw new KeyNotFoundException($"No user found with ID {input.ID}.");
+                throw new KeyNotFoundException($"No user found with ID {input.SellerId}.");
 
             if (!user.Role.Equals("client", StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentException("The provided user ID does not belong to a client.");

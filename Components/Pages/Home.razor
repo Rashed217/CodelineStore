@@ -142,36 +142,36 @@
 <h1>Top Brands</h1>
 
 <MudGrid Justify="Justify.Center" Spacing="3" Style="margin-top: 20px;">
-    <!-- Category 1 -->
+    <!-- Apple -->
     <MudItem xs="6" sm="3">
         <MudCard>
             <MudCardMedia Image="images/Apple.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
             <MudCardActions Style="justify-content: center;">
-                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(FurnitureCategoryId)">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToSellerInfo(1)">
                     Apple
                 </MudButton>
             </MudCardActions>
         </MudCard>
     </MudItem>
 
-    <!-- Category 2 -->
+    <!-- Samsung -->
     <MudItem xs="6" sm="3">
         <MudCard>
             <MudCardMedia Image="images/Samsung.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
             <MudCardActions Style="justify-content: center;">
-                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ElectronicsCategoryId)">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToSellerInfo(2)">
                     Samsung
                 </MudButton>
             </MudCardActions>
         </MudCard>
     </MudItem>
 
-    <!-- Category 3 -->
+    <!-- Nike -->
     <MudItem xs="6" sm="3">
         <MudCard>
             <MudCardMedia Image="images/Nike.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
             <MudCardActions Style="justify-content: center;">
-                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ClothingCategoryId)">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToSellerInfo(3)">
                     Nike
                 </MudButton>
             </MudCardActions>
@@ -180,36 +180,36 @@
 </MudGrid>
 
 <MudGrid Justify="Justify.Center" Spacing="3" Style="margin-top: 20px;">
-    <!-- Category 1 -->
+    <!-- Adidas -->
     <MudItem xs="6" sm="3">
         <MudCard>
             <MudCardMedia Image="images/Adidas.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
             <MudCardActions Style="justify-content: center;">
-                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(FurnitureCategoryId)">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToSellerInfo(4)">
                     Adidas
                 </MudButton>
             </MudCardActions>
         </MudCard>
     </MudItem>
 
-    <!-- Category 2 -->
+    <!-- Zara -->
     <MudItem xs="6" sm="3">
         <MudCard>
             <MudCardMedia Image="images/Zara.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
             <MudCardActions Style="justify-content: center;">
-                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ElectronicsCategoryId)">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToSellerInfo(5)">
                     Zara
                 </MudButton>
             </MudCardActions>
         </MudCard>
     </MudItem>
 
-    <!-- Category 3 -->
+    <!-- Dell -->
     <MudItem xs="6" sm="3">
         <MudCard>
             <MudCardMedia Image="images/Dell.png" Height="150" Style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin: 10px auto;" />
             <MudCardActions Style="justify-content: center;">
-                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToCategory(ClothingCategoryId)">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToSellerInfo(6)">
                     Dell
                 </MudButton>
             </MudCardActions>
@@ -248,5 +248,11 @@
     {
         // Navigate to the selected category page
         Navigation.NavigateTo($"/ProductCategory/{categoryId}");
+    }
+
+    private void NavigateToSellerInfo(int sellerId)
+    {
+        // Navigate to the seller info page using the sellerId
+        Navigation.NavigateTo($"/SellerInfo/{sellerId}");
     }
 }

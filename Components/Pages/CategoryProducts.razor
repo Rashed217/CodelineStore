@@ -1,0 +1,73 @@
+﻿@page "/CategoryProducts/{categoryId:int}"
+@using CodelineStore.DTOs.ProductDTO;
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-4">Products in this category</MudText>
+
+    @if (IsLoading)
+    {
+        <MudText Typo="Typo.h6" Align="Align.Center">Loading products...</MudText>
+    }
+    else if (HasError)
+    {
+        <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Error">Error loading products.</MudText>
+    }
+    else if (Products.Any())
+    {
+        <MudGrid Justify="Justify.Center" Spacing="3">
+            @foreach (var product in Products)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <MudCard Class="my-2">
+                        <MudCardMedia Image="@product.MainImagePath" Height="200" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h6">@product.Name</MudText>
+                            <MudText Typo="Typo.body2">@($"Price: {product.Price:C}")</MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => NavigateToProductDetails(product.ProductId)">
+                                View Details
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+    else
+    {
+        <MudText Typo="Typo.h6" Align="Align.Center">No products found for this category.</MudText>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int CategoryId { get; set; }
+
+    private bool IsLoading = true;
+    private bool HasError = false;
+    private List<ProductDto> Products = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Products = await ProductService.GetProductsByCategoryAsync(CategoryId);
+        }
+        catch
+        {
+            HasError = true;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void NavigateToProductDetails(int productId)
+    {
+        NavigationManager.NavigateTo($"/Product/{productId}");
+    }
+}

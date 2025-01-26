@@ -4,6 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using AutoMapper;
 using CodelineStore.Data.Repositories;
+using Microsoft.AspNetCore.Components.Authorization;
+using Serilog;
+using System.Text;
+using JWTAuthentication;
+using CodelineStore.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CodelineStore
 {
@@ -47,6 +54,63 @@ namespace CodelineStore
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
+            var key = Encoding.ASCII.GetBytes("CodelineStoreTeamProjectSecurityCode2025");
+
+
+            var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+            builder.Services.AddSingleton(jwtSettings);
+
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+
+                };
+            });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Seller", policy => policy.RequireRole("Seller"));
+                options.AddPolicy("Client", policy => policy.RequireRole("Client"));
+                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+            });
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+
+            builder.Services.AddHttpClient();
+
+            // Cors service
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                builder =>
+                {
+                    builder.AllowAnyOrigin();
+                    builder.AllowAnyMethod();
+                    builder.AllowAnyHeader();
+                });
+            });
+
+            // Configure Serilog
+            // Load Serilog configuration from JSON
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .CreateLogger();
+
+
+            builder.Host.UseSerilog();
+
             builder.Services.AddMudServices();
 
             // Register AutoMapper
@@ -64,7 +128,19 @@ namespace CodelineStore
 
             app.UseHttpsRedirection();
 
+            // Serilog request logging
+            app.UseSerilogRequestLogging();
+
+            // Cors middleware
+            app.UseCors("AllowAll");
+
+
             app.UseStaticFiles();
+
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseAntiforgery();
 
             app.MapRazorComponents<App>()

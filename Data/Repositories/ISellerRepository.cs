@@ -5,6 +5,7 @@ namespace CodelineStore.Data.Repositories
     public interface ISellerRepository
     {
         Seller AddSeller(Seller seller);
+        Task<Seller> GetSellerWithProductsAsync(int sellerId);
         void DeletSeller(Seller seller);
         bool EmailExists(string email);
         IEnumerable<Seller> GetAllSellers();

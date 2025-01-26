@@ -21,7 +21,15 @@ namespace CodelineStore.Data.Repositories
             return _context.Sellers.Find(id);
         }
 
-
+        public async Task<Seller> GetSellerWithProductsAsync(int sellerId)
+        {
+            // Retrieve the seller along with related products and product images
+            return await _context.Sellers
+                .Include(s => s.Products)
+                    .ThenInclude(p => p.ProductImages)
+                .Include(s => s.User) // Include the user for the seller's name
+                .FirstOrDefaultAsync(s => s.SId == sellerId);
+        }
 
         public Seller AddSeller(Seller seller)
         {

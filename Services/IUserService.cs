@@ -15,6 +15,7 @@ namespace CodelineStore.Services
         User GetUserByName(string userName);
         IEnumerable<UserOutput> GetUserByRole(string roleName);
         UserOutput GetUserData(string? userName, int? uid);
+        User Login(string email, string password);
         void UpdateUser(User user);
     }
 }

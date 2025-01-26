@@ -27,6 +27,16 @@ namespace CodelineStore.Data.Repositories
                 .Include(p => p.Category)
                 .FirstOrDefaultAsync(p => p.PId == id);
         }
+
+        public async Task<List<Product>> GetProductsByCategoryAsync(int categoryId)
+        {
+            // Fetch products that belong to the specified category
+            return await _context.Products
+                .Include(p => p.ProductImages) // Include related product images
+                .Where(p => p.CategoryId == categoryId) // Filter by categoryId
+                .ToListAsync(); // Execute query and return the list
+        }
+
         public ProductImages CreateProductImagesAsync(ProductImages productImages)
         {
             _context.ProductImages.Add(productImages);
