@@ -1,74 +1,68 @@
 ﻿@page "/CategoryProducts/{categoryId:int}"
-@using CodelineStore.DTOs.ProductDTO;
-@inject IProductService ProductService
-@inject NavigationManager NavigationManager
+@using CodelineStore.Data.Model
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
+@inject NavigationManager Navigation
 
-
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
-    <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-4">Products in this category</MudText>
-
-    @if (IsLoading)
-    {
-        <MudText Typo="Typo.h6" Align="Align.Center">Loading products...</MudText>
-    }
-    else if (HasError)
-    {
-        <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Error">Error loading products.</MudText>
-    }
-    else if (Products.Any())
-    {
-        <MudGrid Justify="Justify.Center" Spacing="3">
-            @foreach (var product in Products)
+<MudContainer>
+    <MudGrid>
+        @if (products != null && products.Any())
+        {
+            @foreach (var product in products)
             {
                 <MudItem xs="12" sm="6" md="4" lg="3">
-                    <MudCard Class="my-2">
-                        <MudCardMedia Image="@product.MainImagePath" Height="200" />
+                    <MudCard Class="mx-auto my-2" Style="width: 100%; max-width: 350px;">
+                        <MudCardMedia Image="@product.ImagePath"
+                                      Style="object-fit: cover; height: 300px; width: 100%;" />
                         <MudCardContent>
-                            <MudText Typo="Typo.h6">@product.Name</MudText>
-                            <MudText Typo="Typo.body2">@($"Price: {product.Price:C}")</MudText>
+                            <MudText Typo="Typo.h5">@product.Name</MudText>
+                            <MudText Typo="Typo.body2">Price: $@product.Price</MudText>
                         </MudCardContent>
                         <MudCardActions>
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => NavigateToProductDetails(product.ProductId)">
-                                View Details
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary">
+                                Add to Cart
                             </MudButton>
                         </MudCardActions>
                     </MudCard>
                 </MudItem>
             }
-        </MudGrid>
-    }
-    else
-    {
-        <MudText Typo="Typo.h6" Align="Align.Center">No products found for this category.</MudText>
-    }
+        }
+        else
+        {
+            <MudText Typo="Typo.h6" Align="Align.Center" Class="mt-4">No products available in this category.</MudText>
+        }
+    </MudGrid>
 </MudContainer>
 
 @code {
     [Parameter]
     public int CategoryId { get; set; }
 
-    private bool IsLoading = true;
-    private bool HasError = false;
-    private List<ProductDto> Products = new();
+    private List<ProductWithImage> products;
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            Products = await ProductService.GetProductsByCategoryAsync(CategoryId);
-        }
-        catch
-        {
-            HasError = true;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+        // Fetch products for the selected category
+        products = await DbContext.Products
+            .Where(p => p.CategoryId == CategoryId)
+            .Select(p => new ProductWithImage
+                {
+                    ProductId = p.PId,
+                    Name = p.Name,
+                    Price = p.Price,
+                    ImagePath = p.ProductImages
+                        .Select(img => img.imagePath)
+                        .FirstOrDefault() ?? "images/default-product.png" // Fallback image
+                })
+            .ToListAsync();
     }
 
-    private void NavigateToProductDetails(int productId)
+    public class ProductWithImage
     {
-        NavigationManager.NavigateTo($"/Product/{productId}");
+        public int ProductId { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public string ImagePath { get; set; }
     }
 }
