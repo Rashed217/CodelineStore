@@ -1,8 +1,30 @@
 ﻿@using CodelineStore.Components.Layout
-<Router AppAssembly="typeof(Program).Assembly">
+@* <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.AdminLayout)" />
+        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
-</Router>
+</Router> *@
 
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+                <Authorizing>
+                    <p>Authorizing...</p>
+                </Authorizing>
+                <NotAuthorized>
+       
+                    <RedirectToLogin />
+
+                </NotAuthorized>
+            </AuthorizeRouteView>
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(Layout.MainLayout)">
+                <p>Sorry, there's nothing at this address</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
