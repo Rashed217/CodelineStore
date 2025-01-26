@@ -88,6 +88,7 @@ namespace CodelineStore
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
+            builder.Services.AddHttpClient();
 
             // Cors service
             builder.Services.AddCors(options =>
@@ -127,7 +128,19 @@ namespace CodelineStore
 
             app.UseHttpsRedirection();
 
+            // Serilog request logging
+            app.UseSerilogRequestLogging();
+
+            // Cors middleware
+            app.UseCors("AllowAll");
+
+
             app.UseStaticFiles();
+
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseAntiforgery();
 
             app.MapRazorComponents<App>()

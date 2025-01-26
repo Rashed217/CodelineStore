@@ -90,7 +90,27 @@ namespace CodelineStore.Data.Repositories
         public User Login(string email, string password)
         {
 
-            return _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
+            // Fetch the user by email
+            var user = _context.Users.FirstOrDefault(u => u.Email == email);
+
+            if (user != null && VerifyPassword(password, user.Password))
+            {
+                return user; // Password matches
+            }
+
+            return null; // User not found or password mismatch
+        }
+
+        private string HashPassword(string password)
+        {
+            // Replace this with a secure password hashing algorithm (e.g., BCrypt, SHA256)
+            return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(password));
+        }
+
+        private bool VerifyPassword(string enteredPassword, string storedPasswordHash)
+        {
+            // Example: Compare hashed passwords (implement actual hashing logic)
+            return HashPassword(enteredPassword) == storedPasswordHash;
         }
     }
 }

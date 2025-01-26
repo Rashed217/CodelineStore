@@ -35,51 +35,62 @@
 
 @code {
     private bool success;
-    private bool showError = false;
+    private bool showError;
     private MudForm form;
     private string Email;
     private string Password;
     private string Message;
     private string AlertClass;
 
-    private void LoginUser()
+
+    private async Task LoginUser()
     {
         Log.Information($"Received login request from Email: {Email}");
-        var user = UserService.Login(Email, Password);
 
-        if (user == null)
+        try
         {
-            Log.Error($"Login Failed due to user wrong credinials");
+            var user = UserService.Login(Email, Password); // Await the login method.
 
-            Message = "Login failed. Please check your credentials.";
-            AlertClass = "alert-danger";
-        }
-        else
-        {
-            Log.Debug($"Login credinials successed ");
+            if (user == null)
+            {
+                Log.Error("Login failed due to wrong credentials.");
+                Message = "Login failed. Please check your credentials.";
+                AlertClass = "alert-danger";
+                return;
+            }
+
+            Log.Debug("Login credentials succeeded.");
             Message = "Login successful!";
             AlertClass = "alert-success";
 
+            // Generate authentication token
             AuthService.GenerateToken(user);
+
+            // Navigate based on user role
             if (user.Role == "Client")
-                Navigation.NavigateTo("/Home");
+                Navigation.NavigateTo("/");
             else if (user.Role == "Seller")
                 Navigation.NavigateTo("/SellerPortal");
             else
                 Navigation.NavigateTo("/AddCategory");
-
         }
-    }
-
-    private bool VerifyPassword(string enteredPassword, string storedPasswordHash)
-    {
-        // Example: Compare hashed passwords (implement actual hashing logic)
-        return HashPassword(enteredPassword) == storedPasswordHash;
+        catch (Exception ex)
+        {
+            Log.Error($"An error occurred during login: {ex.Message}");
+            Message = "An unexpected error occurred. Please try again later.";
+            AlertClass = "alert-danger";
+        }
     }
 
     private string HashPassword(string password)
     {
         // Replace this with a secure password hashing algorithm (e.g., BCrypt, SHA256)
         return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(password));
+    }
+
+    private bool VerifyPassword(string enteredPassword, string storedPasswordHash)
+    {
+        // Example: Compare hashed passwords (implement actual hashing logic)
+        return HashPassword(enteredPassword) == storedPasswordHash;
     }
 }
