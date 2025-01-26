@@ -1,0 +1,12 @@
+﻿@inject MudDialogInstance MudDialog
+
+<MudDialog>
+    <MudDialogTitle>Delete Confirmation</MudDialogTitle>
+    <MudDialogContent>
+        Are you sure you want to delete this product?
+    </MudDialogContent>
+    <MudDialogActions>
+        <MudButton OnClick="() => MudDialog.Close(DialogResult.Ok(true))" Color="Color.Error">Yes</MudButton>
+        <MudButton OnClick="() => MudDialog.Close(DialogResult.Cancel())" Color="Color.Default">No</MudButton>
+    </MudDialogActions>
+</MudDialog>

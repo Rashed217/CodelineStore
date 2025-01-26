@@ -1,17 +1,10 @@
 @page "/AdminUserProfile/{UserId:int}"
 @inject ApplicationDbContext DbContext
 @inject NavigationManager Navigation
-@inject IDialogService DialogService
-@inject IUserService UserService
-@using CodelineStore.DTOs
-@using CodelineStore.DTOs.ConfirmationDialogDTO
+@inject IJSRuntime JSRuntime
 @using CodelineStore.Data.Model
 @using Microsoft.EntityFrameworkCore
 @using MudBlazor
-@inject IJSRuntime JSRuntime
-<MudThemeProvider />
-<MudDialogProvider /> <!-- Enables dialogs -->
-<MudSnackbarProvider />
 
 <MudContainer Class="mt-4">
     @if (UserDetails == null)
@@ -32,7 +25,7 @@
                 <MudText Typo="Typo.body1"><b>Role:</b> @UserDetails.Role</MudText>
             </MudCardContent>
             <MudCardActions Class="d-flex justify-content-end">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditUser" Class="mr-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@EditUser" Class="mr-2">
                     Edit User
                 </MudButton>
                 <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="ShowDeleteConfirmation">
@@ -67,31 +60,22 @@
 
     private async Task ShowDeleteConfirmation()
     {
-        var parameters = new DialogParameters
-    {
-        { "DialogData", new ConfirmationDialogDTO
+        try
+        {
+            // Show a native browser confirmation dialog
+            bool confirmDelete = await JSRuntime.InvokeAsync<bool>("confirm",
+                $"Are you sure you want to delete the user '{UserDetails?.Username}'?");
+
+            if (confirmDelete)
             {
-                Title = "Delete User",
-                Message = $"Are you sure you want to delete the user '{UserDetails?.Username}'?",
-                ConfirmButtonText = "Delete",
-                CancelButtonText = "Cancel"
+                await DeleteUser();
             }
         }
-    };
-
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small };
-
-        // Use DialogService to show the dialog
-        var dialog = DialogService.Show<ConfirmationModal>("Delete Confirmation", parameters, options);
-        var result = await dialog.Result;
-
-        // Handle the result
-        if (!result.Canceled)
+        catch (Exception e)
         {
-            await DeleteUser();
+            Console.WriteLine($"Error during delete confirmation: {e.Message}");
         }
     }
-
 
     private async Task DeleteUser()
     {
