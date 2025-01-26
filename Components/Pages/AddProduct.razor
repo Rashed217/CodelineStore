@@ -50,7 +50,13 @@
         }
     </MudSelect>
 
-   
+   <!-- Seller Dropdown (assuming you have a list of sellers) -->
+    <MudSelect T="int" Label="Seller" @bind-Value="newProduct.SellerId" Variant="Variant.Outlined" Class="mb-3">
+        @foreach (var seller in sellers)
+        {
+            <MudSelectItem T="int" Value="@seller.SId">@seller.User.Client</MudSelectItem>
+        }
+    </MudSelect>
 
     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="HandleValidSubmit">
         Add Product
