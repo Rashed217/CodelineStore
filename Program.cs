@@ -93,6 +93,8 @@ namespace CodelineStore
             builder.Services.AddHttpClient();
             builder.Services.AddHttpContextAccessor();
 
+            builder.Services.AddScoped<CookieService>();
+
             // Cors service
             builder.Services.AddCors(options =>
             {
