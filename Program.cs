@@ -91,7 +91,10 @@ namespace CodelineStore
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             builder.Services.AddHttpClient();
+            builder.Services.AddHttpContextAccessor();
 
             // Cors service
             builder.Services.AddCors(options =>

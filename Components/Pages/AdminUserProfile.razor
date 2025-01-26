@@ -1,6 +1,7 @@
-@page "/UserProfile/{UserId:int}"
+@page "/AdminUserProfile/{UserId:int}"
 @inject ApplicationDbContext DbContext
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 @using CodelineStore.Data.Model
 @using Microsoft.EntityFrameworkCore
 @using MudBlazor
@@ -8,20 +9,22 @@
 <MudContainer Class="mt-4">
     @if (UserDetails == null)
     {
-        <MudText Typo="Typo.h6" Align="Align.Center">User not found.</MudText>
+        <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Error">
+            User not found.
+        </MudText>
     }
     else
     {
         <MudCard Class="mx-auto" Style="max-width: 600px;">
             <MudCardContent>
-                <MudText Typo="Typo.h5">User Details</MudText>
+                <MudText Typo="Typo.h5" Class="mb-2">User Details</MudText>
                 <MudDivider Class="my-2" />
                 <MudText Typo="Typo.body1"><b>User ID:</b> @UserDetails.UserId</MudText>
                 <MudText Typo="Typo.body1"><b>Username:</b> @UserDetails.Username</MudText>
                 <MudText Typo="Typo.body1"><b>Email:</b> @UserDetails.Email</MudText>
                 <MudText Typo="Typo.body1"><b>Role:</b> @UserDetails.Role</MudText>
             </MudCardContent>
-            <MudCardActions>
+            <MudCardActions Class="d-flex justify-content-end">
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@EditUser" Class="mr-2">
                     Edit User
                 </MudButton>
@@ -31,29 +34,11 @@
             </MudCardActions>
         </MudCard>
     }
-
-    <!-- Delete Confirmation Dialog -->
-    @if (ShowDeleteDialog)
-    {
-        <MudDialog @bind-IsOpen="ShowDeleteDialog" MaxWidth="MaxWidth.Small">
-            <MudDialogTitle>Confirm Deletion</MudDialogTitle>
-            <MudDialogContent>
-                <MudText Typo="Typo.body1">
-                    Are you sure you want to delete this user?
-                </MudText>
-            </MudDialogContent>
-            <MudDialogActions>
-                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="ConfirmDeleteUser">Delete</MudButton>
-                <MudButton Variant="Variant.Outlined" OnClick="CancelDelete">Cancel</MudButton>
-            </MudDialogActions>
-        </MudDialog>
-    }
 </MudContainer>
 
 @code {
     [Parameter] public int UserId { get; set; }
     private User UserDetails { get; set; }
-    private bool ShowDeleteDialog = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -69,17 +54,30 @@
 
     private void EditUser()
     {
-        // Navigate to an Edit User page with the user ID
+        // Navigate to the Edit User page
         Navigation.NavigateTo($"/EditUser/{UserId}");
     }
 
-    private void ShowDeleteConfirmation()
+    private async Task ShowDeleteConfirmation()
     {
-        // Open delete confirmation dialog
-        ShowDeleteDialog = true;
+        try
+        {
+            // Show a native browser confirmation dialog
+            bool confirmDelete = await JSRuntime.InvokeAsync<bool>("confirm",
+                $"Are you sure you want to delete the user '{UserDetails?.Username}'?");
+
+            if (confirmDelete)
+            {
+                await DeleteUser();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error during delete confirmation: {e.Message}");
+        }
     }
 
-    private async Task ConfirmDeleteUser()
+    private async Task DeleteUser()
     {
         try
         {
@@ -89,22 +87,12 @@
                 DbContext.Users.Remove(user);
                 await DbContext.SaveChangesAsync();
                 Console.WriteLine($"User with ID {UserId} deleted successfully.");
-                Navigation.NavigateTo("/ViewUsers"); // Redirect back to ViewUsers page
+                Navigation.NavigateTo("/ViewUsers"); // Redirect to View Users page
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error deleting user: {ex.Message}");
         }
-        finally
-        {
-            ShowDeleteDialog = false;
-        }
-    }
-
-    private void CancelDelete()
-    {
-        // Close the delete confirmation dialog
-        ShowDeleteDialog = false;
     }
 }

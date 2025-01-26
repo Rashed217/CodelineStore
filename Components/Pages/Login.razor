@@ -54,7 +54,7 @@
             if (user == null)
             {
                 Log.Error("Login failed due to wrong credentials.");
-                Message = "Login failed. Please check your credentials.";
+                showError = true;
                 AlertClass = "alert-danger";
                 return;
             }
