@@ -9,7 +9,9 @@ namespace CodelineStore.DTOs.SellerDTOs
         public SellerInput()
         {
             Role = "Seller"; // Default role for sellers
+            User = new UserInput(); // Ensure User is initialized
         }
         public UserInput User { get; set; }
     }
+
 }

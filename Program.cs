@@ -11,6 +11,8 @@ using JWTAuthentication;
 using CodelineStore.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using CodelineStore.Helper;
+
 
 namespace CodelineStore
 {
@@ -49,6 +51,7 @@ namespace CodelineStore
             builder.Services.AddScoped<ISellerRepository, SellerRepository>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ISendEmail, SendEmail>();
 
             // Add services to the container.
             builder.Services.AddRazorComponents()

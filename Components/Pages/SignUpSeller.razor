@@ -3,6 +3,9 @@
 @inject ApplicationDbContext DbContext
 @inject IMapper mapper
 @inject IWebHostEnvironment WebHostEnvironment
+@inject ISendEmail EmailService
+@inject ISellerService SellerService
+
 
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
@@ -15,6 +18,7 @@
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.EntityFrameworkCore
 @using MudBlazor
+
 
 <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Style="min-height: 100vh; margin-top: 50px;">
     <MudItem xs="12" sm="6" md="4">
@@ -116,61 +120,87 @@
         "Bahrain", "Jordan", "Lebanon", "Egypt", "Iraq"
     };
 
-    private async Task RegisterSeller()
+private async Task RegisterSeller()
+{
+    try
     {
-        try
+        await form.Validate();
+        if (form.IsValid)
         {
-            await form.Validate();
-            if (form.IsValid)
+            // Ensure the profile image path is set after file upload
+            if (_files.Count > 0)
             {
-                // Ensure the profile image path is set after file upload
-                if (_files.Count > 0)
-                {
-                    userInput.ProfileImagePath = Path.Combine("images", $"{userInput.Username}.jpg");
-                }
-
-                // Map user-specific data
-                var userEntity = new User
-                    {
-                        Username = userInput.Username,
-                        Email = userInput.Email,
-                        Password = HashPassword(userInput.Password), // Ensure to hash the password
-                        Country = userInput.Country,
-                        Role = "Seller" // Set the role appropriately
-                    };
-
-                // Map seller-specific data
-                var sellerEntity = new Seller
-                    {
-                        ProfileImagePath = userInput.ProfileImagePath,
-                        User = userEntity // Establish relationship between User and Seller
-                    };
-
-                // Add user to Users table
-                DbContext.Users.Add(userEntity);
-
-                // Add seller to Sellers table
-                DbContext.Sellers.Add(sellerEntity);
-
-                // Save changes to the database
-                await DbContext.SaveChangesAsync();
-
-                // Show success alert and reset the form
-                showSuccessAlert = true;
-                showFailedAlert = false;
-
-                // Reset the form
-                userInput = new SellerInput();
-                _files.Clear(); // Clear the uploaded files
+                userInput.ProfileImagePath = Path.Combine("images", $"{userInput.Username}.jpg");
             }
-        }
-        catch (Exception ex)
-        {
-            showSuccessAlert = false;
-            showFailedAlert = true;
-            Console.WriteLine($"An error occurred: {ex.Message}"); // Log the error
+
+            // Create the user first
+            var userEntity = new User
+            {
+                Username = userInput.Username,
+                Email = userInput.Email,
+                Password = HashPassword(userInput.Password), // Ensure to hash the password
+                Country = userInput.Country,
+                Role = "Seller" // Default role for client (you may change this as needed)
+            };
+
+            // Add the user to the Users table
+            DbContext.Users.Add(userEntity);
+            await DbContext.SaveChangesAsync(); // Save to get the UserId
+
+            // Now that the user is saved, create the associated seller entity
+            var sellerEntity = new Seller
+            {
+                User = userEntity,
+                UserId = userEntity.UserId, // Associate the Seller with the created User
+                ProfileImagePath = userInput.ProfileImagePath,
+                SellerRating = 0 // Default rating for the new seller
+            };
+
+            // Add the seller to the Sellers table
+            // DbContext.Sellers.Add(sellerEntity);
+            // await DbContext.SaveChangesAsync(); // Save the Seller entity to get SellerId (SId)
+
+            // Now you can safely use the Seller's ID and other data
+            var sellerOutput = new SellerOutput
+            {
+                userId = userEntity.UserId,
+                SellerId = sellerEntity.SId, // Use the SellerId from the newly created Seller
+                SellerName = sellerEntity.User.Username, // Name from the associated User
+                SellerProfileImage = sellerEntity.ProfileImagePath, // Profile image path from Seller
+                SellerRating = sellerEntity.SellerRating // Seller's rating
+            };
+
+            // Call AddSeller method from the service
+            SellerService.AddSeller(sellerOutput);
+
+            // Show success alert and reset the form
+            showSuccessAlert = true;
+            showFailedAlert = false;
+
+            var subject = "Welcome to CodelineStore - Seller Registration Confirmation";
+            var body = $@"
+            Dear {userInput.Username},
+            We are pleased to inform you that your registration as a seller on CodelineStore has been successfully completed. Your account has been created, and you may now log in to manage your store.
+            Best regards,
+            CodelineStore Team/";
+
+            await EmailService.SendEmailAsync(userInput.Email, subject, body);
+
+            // Reset the form
+            userInput = new SellerInput();
+            _files.Clear(); // Clear the uploaded files
         }
     }
+    catch (Exception ex)
+    {
+        showSuccessAlert = false;
+        showFailedAlert = true;
+        Console.WriteLine($"An error occurred: {ex.Message}"); // Log the error
+    }
+}
+
+
+
 
     private string HashPassword(string password)
     {
