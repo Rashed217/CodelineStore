@@ -1,5 +1,6 @@
 ﻿@page "/searchresults"
 @using CodelineStore.Data
+@using CodelineStore.Services
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager NavigationManager
 @inject ApplicationDbContext DbContext
@@ -11,7 +12,7 @@
         {
             <MudItem xs="12" sm="6" md="4">
                 <MudCard>
-                    <MudCardMedia Image="@product.Image" Height="200" />
+                    <MudCardMedia Image="@product.ProductImages" Height="200" />
                     <MudCardContent>
                         <MudText Typo="Typo.h5">@product.Name</MudText>
                         <MudText Typo="Typo.body2">@product.Description</MudText>
@@ -30,7 +31,7 @@
     {
         <MudText Typo="Typo.body1" Align="Align.Center" Class="mt-4">No products found for "@searchKeyword".</MudText>
     }
-</MudGrid *@>
+</MudGrid> *@
 
 @code {
     private string searchKeyword;
