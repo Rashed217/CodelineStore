@@ -1,9 +1,10 @@
 ﻿@page "/SellerInfo/{sellerId:int}"
+@using CodelineStore.Components.Layout
 @using CodelineStore.DTOs.ProductDTO
 @using CodelineStore.DTOs.SellerDTOs
 @inject ISellerService SellerService
 @inject NavigationManager NavigationManager
-
+@layout CustomerLayout
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
     @if (IsLoading)
     {

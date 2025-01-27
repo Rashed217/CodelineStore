@@ -1,5 +1,5 @@
 ﻿@page "/UserProfile"
-
+@layout AdminLayout //Added this 
 @inject NavigationManager Navigation
 @inject ApplicationDbContext DbContext
 @inject IMapper mapper
@@ -8,6 +8,7 @@
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
 @using AutoMapper
+@using CodelineStore.Components.Layout
 @using CodelineStore.DTOs.ClientDTOs
 @using CodelineStore.DTOs.UserDTOs
 @using CodelineStore.Data

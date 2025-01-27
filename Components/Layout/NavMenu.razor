@@ -1,25 +1,69 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Codeline Store</a>
-    </div>
-</div>
+﻿@using CodelineStore.DTOs.CategoryDTOs
+@using CodelineStore.Data.Model
+@using CodelineStore.Services
+@using Microsoft.EntityFrameworkCore
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+@inject ISellerService sellerService
+@inject ICategoryService categoryService
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+<MudPaper Width="250px" Class="d-inline-flex py-3" Elevation="0">
+    <MudNavMenu Class="mud-width-full">
+        <MudText Typo="Typo.h5" Class="px-4">Main Menu</MudText>
+        <MudDivider Class="my-2" />
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
+        <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
 
-    </nav>
-</div>
+        <!-- Brands (Sellers) Navigation Group -->
+        <MudNavGroup Title="Brands" Icon="@Icons.Material.Filled.Shop2">
+            <MudNavLink Href="/Brands/Apple">
+                Apple
+            </MudNavLink>
+            <MudNavLink Href="/Brands/Samsung">
+                Samsung
+            </MudNavLink>
+            <MudNavLink Href="/Brands/Nike">
+                Nike
+            </MudNavLink>
+            <MudNavLink Href="/Brands/Adidas">
+                Adidas
+            </MudNavLink>
+        </MudNavGroup>
 
+        <MudNavGroup Title="Categories" Icon="@Icons.Material.Filled.Category">
+            <MudNavLink Href="/Categories">
+                Show All Categories
+            </MudNavLink>
+            <MudNavLink Href="/Category/Groceries">
+                Groceries
+            </MudNavLink>
+            <MudNavLink Href="/Category/Electronics">
+                Electronics
+            </MudNavLink>
+            <MudNavLink Href="/Category/Clothing">
+                Clothing
+            </MudNavLink>
+            <MudNavLink Href="/Category/Books">
+                Books
+            </MudNavLink>
+            <MudNavLink Href="/Category/Toys">
+                Toys
+            </MudNavLink>
+            <MudNavLink Href="/Category/Sports">
+                Sports
+            </MudNavLink>
+            <MudNavLink Href="/Category/Beauty">
+                Beauty
+            </MudNavLink>
+            <MudNavLink Href="/Category/Automotive">
+                Automotive
+            </MudNavLink>
+            <MudNavLink Href="/Category/Health">
+                Health
+            </MudNavLink>
+        </MudNavGroup>
+
+
+       
+
+    </MudNavMenu>
+</MudPaper>

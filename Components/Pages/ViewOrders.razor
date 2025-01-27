@@ -1,9 +1,10 @@
 @page "/ViewOrders"
+@using CodelineStore.Components.Layout
 @using CodelineStore.Data.Model
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavigationManager
-
+@layout CustomerLayout
 <h1>Your Orders</h1>
 
 @if (Orders == null)
