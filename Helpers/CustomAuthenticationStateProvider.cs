@@ -14,7 +14,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace JWTAuthentication
+namespace CodelineStore.Helpers
 {
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {

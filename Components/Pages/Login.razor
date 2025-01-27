@@ -68,11 +68,11 @@
 
             // Navigate based on user role
             if (user.Role == "Client")
-                Navigation.NavigateTo("/");
+                Navigation.NavigateTo("Customer");
             else if (user.Role == "Seller")
                 Navigation.NavigateTo("/SellerPortal");
             else
-                Navigation.NavigateTo("/AddCategory");
+                Navigation.NavigateTo("/AdminHome");
         }
         catch (Exception ex)
         {

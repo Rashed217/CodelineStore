@@ -34,16 +34,9 @@
                           LabelStyle="font-size: 16px;" />
         </div>
 
-        <!-- User Info -->
-        @if (UserState.IsLoggedIn)
-        {
-            <MudText Typo="Typo.subtitle1" Class="mr-3">Hello, @UserState.UserName</MudText>
-            <MudButton Variant="Variant.Outlined" OnClick="@LogOut" Style="background-color: #ffffff; color: rebeccapurple;" Class="ml-3">Log Out</MudButton>
-        }
-        else
-        {
-            <MudButton Variant="Variant.Outlined" OnClick="@NavigateToLogin" Style="background-color: #ffffff; color: rebeccapurple;" Class="ml-3">Log In</MudButton>
-        }
+        <MudButton Variant="Variant.Outlined" OnClick="@LogOut" Style="background-color: #fff; color: rebeccapurple; border-color: #fff;" Class="ml-3">
+            Log Out
+        </MudButton>
     </MudAppBar>
 
     <!-- Drawer -->

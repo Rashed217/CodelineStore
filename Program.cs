@@ -7,7 +7,7 @@ using CodelineStore.Data.Repositories;
 using Microsoft.AspNetCore.Components.Authorization;
 using Serilog;
 using System.Text;
-using JWTAuthentication;
+
 using CodelineStore.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;

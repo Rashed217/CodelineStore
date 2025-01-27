@@ -2,10 +2,11 @@
 @inject ApplicationDbContext DbContext
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@using CodelineStore.Components.Layout
 @using CodelineStore.Data.Model
 @using Microsoft.EntityFrameworkCore
 @using MudBlazor
-
+@layout AdminLayout
 <MudContainer Class="mt-4">
     @if (UserDetails == null)
     {
