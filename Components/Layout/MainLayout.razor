@@ -27,7 +27,7 @@
                            OnClick="NavigateToSearchResults"
                            Style="background-color: #ffffffff; color: rebeccapurple; border-color: #ffffffff; border-radius: 50%; width: 40px; height: 40px; margin-top:8px" />
             <!-- Search Field and Button -->
-            <MudTextField @bind-Value="SearchQuery"
+            <MudTextField @bind-Value="searchKeyword"
                           Label="Search"
                           Variant="Variant.Outlined"
                           Style="background-color: #ffffffff; color: rebeccapurple; border-radius: 6px; height: 45px; max-width: 400px; flex-grow: 1; margin-left: 10px; margin-top: 4px;"
@@ -76,7 +76,6 @@
 
 @code {
     private bool _drawerOpen = true;
-    private string SearchQuery { get; set; }
 
     private void DrawerToggle()
     {
@@ -94,11 +93,13 @@
         Navigation.NavigateTo("/");
     }
 
+    private string searchKeyword = string.Empty;
+
     private void NavigateToSearchResults()
     {
-        if (!string.IsNullOrEmpty(SearchQuery))
+        if (!string.IsNullOrWhiteSpace(searchKeyword))
         {
-            Navigation.NavigateTo($"/search?query={SearchQuery}");
+            Navigation.NavigateTo($"/searchresults?keyword={Uri.EscapeDataString(searchKeyword)}");
         }
     }
 }

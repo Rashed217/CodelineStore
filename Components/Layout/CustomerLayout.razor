@@ -22,17 +22,20 @@
         <MudSpacer />
 
         <!-- Search Field and Button -->
-        <div class="d-flex justify-content-center align-items-center" style="width: 100%; margin-left: 15px;">
-            <MudIconButton Icon="fas fa-search"
-                           Color="Color.Primary"
-                           OnClick="NavigateToSearchResults"
-                           Style="background-color: #ffffff; color: rebeccapurple; border-radius: 50%; width: 40px; height: 40px;" />
-            <MudTextField @bind-Value="SearchQuery"
-                          Placeholder="Search products..."
-                          Variant="Variant.Outlined"
-                          Style="background-color: #ffffff; border-radius: 6px; height: 45px; max-width: 400px; flex-grow: 1; margin-left: 10px;"
-                          LabelStyle="font-size: 16px;" />
-        </div>
+        <form onsubmit="event.preventDefault(); NavigateToSearchResults();">
+            <div class="d-flex justify-content-center align-items-center" style="width: 100%; margin-left: 15px;">
+                <MudIconButton Icon="fas fa-search"
+                               Color="Color.Primary"
+                               OnClick="NavigateToSearchResults"
+                               Style="background-color: #ffffff; color: rebeccapurple; border-radius: 50%; width: 40px; height: 40px;" />
+                <MudTextField @bind-Value="searchKeyword"
+                              Placeholder="Search products..."
+                              Variant="Variant.Outlined"
+                              Style="background-color: #ffffff; border-radius: 6px; height: 45px; max-width: 400px; flex-grow: 1; margin-left: 10px;"
+                              LabelStyle="font-size: 16px;" />
+            </div>
+        </form>
+
 
         <MudButton Variant="Variant.Outlined" OnClick="@LogOut" Style="background-color: #fff; color: rebeccapurple; border-color: #fff;" Class="ml-3">
             Log Out
@@ -62,7 +65,6 @@
 
 @code {
     private bool _drawerOpen = true;
-    private string SearchQuery { get; set; }
 
     private void DrawerToggle()
     {
@@ -81,11 +83,13 @@
         Navigation.NavigateTo("/Login");
     }
 
+    private string searchKeyword = string.Empty;
+
     private void NavigateToSearchResults()
     {
-        if (!string.IsNullOrEmpty(SearchQuery))
+        if (!string.IsNullOrWhiteSpace(searchKeyword))
         {
-            Navigation.NavigateTo($"/search?query={SearchQuery}");
+            Navigation.NavigateTo($"/searchresults?keyword={Uri.EscapeDataString(searchKeyword)}");
         }
     }
 }
