@@ -1,6 +1,6 @@
 ﻿using Azure;
 using JWTAuth.Model;
-using JWTAuthentication;
+
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.JSInterop;
@@ -49,7 +49,8 @@ namespace CodelineStore.Services
             );
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
+            SaveTokenToCookie(tokenString);
+            ((CustomAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(tokenString);
             return new JwtTokenResponse
             {
                 Token = tokenString,

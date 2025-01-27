@@ -1,14 +1,14 @@
 ﻿@page "/AdminHome"
-
-@using CodelineStore.Components.Layout
 @layout AdminLayout
+@using CodelineStore.Components.Layout
+
 @inject NavigationManager Navigation
 <MudContainer Class="mt-4">
     <MudGrid Spacing="2">
         <!-- Welcome Banner -->
         <MudItem xs="12">
             <MudPaper Elevation="3" Class="p-4 text-center" Style="background-color: #f8f9fa;">
-                <MudText Typo="Typo.h4" Class="mb-2">Welcome, Admin!</MudText>
+                <MudText Typo="Typo.h4" Class="mb-2">Welcome, </MudText>
                 <MudText Typo="Typo.subtitle1" Color="Color.Secondary">Manage your store effectively with the tools below.</MudText>
             </MudPaper>
         </MudItem>
@@ -70,6 +70,7 @@
 </MudContainer>
 
 @code {
+
     private List<ActivityLog> RecentActivities = new();
 
     protected override async Task OnInitializedAsync()
