@@ -7,6 +7,7 @@ namespace CodelineStore.Services
     {
         JwtTokenResponse GenerateToken(User user);
         int? GetLoggedInSellerId();
+        Task Logout();
         Task SaveTokenToCookie(string token);
     }
 }
