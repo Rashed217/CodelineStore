@@ -5,7 +5,6 @@
 @using Microsoft.EntityFrameworkCore
 @using static MudBlazor.CategoryTypes
 @inject ICompoundService compoundService
-@inject IAuthService AuthService
 @inject NavigationManager Navigation
 @inject ApplicationDbContext DbContext
 @using CodelineStore.Components.Layout
@@ -35,25 +34,27 @@
     <MudTextField T="string" Label="Product Name" @bind-Value="newProduct.Name" Variant="Variant.Outlined" Class="mb-3" />
     <MudTextField T="decimal" Label="Price" @bind-Value="newProduct.Price" Variant="Variant.Outlined" Class="mb-3" />
     <MudTextField T="string" Label="Description" @bind-Value="newProduct.Description" Variant="Variant.Outlined" Class="mb-3" />
+    <MudTextField T="string" Label="Image URL" @bind-Value="imagePath" Variant="Variant.Outlined" Class="mb-3" />
 
     <!-- Stock Input -->
     <MudTextField T="int" Label="Stock" @bind-Value="newProduct.Stock" Variant="Variant.Outlined" Class="mb-3" />
 
-    <!-- File Upload for Image -->
-    <InputFile OnChange="HandleFileUpload" />
-
-    @if (!string.IsNullOrEmpty(imagePath))
-    {
-        <div class="mt-3">
-            <img src="@imagePath" alt="Uploaded Image" style="max-width: 200px; max-height: 200px;" />
-        </div>
-    }
+    <!-- TotalSold (You can set this automatically, for now it's not used directly in the form) -->
+    <MudTextField T="int" Label="Total Sold" @bind-Value="newProduct.TotalSold" Variant="Variant.Outlined" Class="mb-3" Disabled />
 
     <!-- Category Dropdown (assuming you have a list of categories) -->
     <MudSelect T="int" Label="Category" @bind-Value="newProduct.CategoryId" Variant="Variant.Outlined" Class="mb-3">
         @foreach (var category in categories)
         {
             <MudSelectItem T="int" Value="@category.CatId">@category.Name</MudSelectItem>
+        }
+    </MudSelect>
+
+    <!-- Seller Dropdown (assuming you have a list of sellers) -->
+    <MudSelect T="int" Label="Seller" @bind-Value="newProduct.SellerId" Variant="Variant.Outlined" Class="mb-3">
+        @foreach (var seller in sellers)
+        {
+            <MudSelectItem T="int" Value="@seller.SId">@seller.User.Client</MudSelectItem>
         }
     </MudSelect>
 
@@ -101,7 +102,7 @@
         margin-top: 20px;
     }
 </style>
-}
+
 
 
 @code {
@@ -109,10 +110,9 @@
     private bool showSuccessAlert = false;
     private bool showFailedAlert = false;
     private Product newProduct = new Product();
-    private IBrowserFile uploadedFile;
     private string imagePath;
-    private List<Category> categories = new List<Category>();
-    private List<Seller> sellers = new List<Seller>();
+    private List<Category> categories = new List<Category>(); // Categories to show in dropdown
+    private List<Seller> sellers = new List<Seller>(); // Sellers to show in dropdown
 
     protected override async Task OnInitializedAsync()
     {
@@ -121,37 +121,17 @@
         sellers = await DbContext.Sellers.Include(s => s.User).ToListAsync();
     }
 
-    private async Task HandleFileUpload(InputFileChangeEventArgs e)
-    {
-        uploadedFile = e.File;
-
-        if (uploadedFile != null)
-        {
-            var filePath = Path.Combine("wwwroot/uploads", uploadedFile.Name);
-
-            // Ensure the directory exists
-            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-            // Save the file
-            await using var stream = new FileStream(filePath, FileMode.Create);
-            await uploadedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(stream);
-
-            imagePath = $"/uploads/{uploadedFile.Name}"; // Save the relative path for the product
-        }
-    }
-
     private void HandleValidSubmit()
     {
         try
         {
+
             // Add the new product to the database
             compoundService.AddProduct(newProduct, imagePath);
 
             showSuccessAlert = true;
-
             // Reset the form after successful submission
             newProduct = new Product();
-            uploadedFile = null;
         }
         catch (Exception ex)
         {
