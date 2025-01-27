@@ -2,7 +2,7 @@
 @inherits LayoutComponentBase
 @inject NavigationManager Navigation
 @inject UserState UserState
-
+@inject IAuthService Authentication
 @* Required *@
 <MudThemeProvider />
 <MudPopoverProvider />
@@ -89,6 +89,7 @@
 
     private void LogOut()
     {
+        Authentication.Logout();
         UserState.LogOut();
         Navigation.NavigateTo("/");
     }

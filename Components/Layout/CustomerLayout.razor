@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager Navigation
 @inject UserState UserState
-
+@inject IAuthService Authentication
 @using CodelineStore.Services
 
 @* Required *@
@@ -76,6 +76,7 @@
 
     private void LogOut()
     {
+        Authentication.Logout();
         UserState.LogOut();
         Navigation.NavigateTo("/Login");
     }
