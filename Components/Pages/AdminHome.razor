@@ -1,0 +1,107 @@
+﻿@page "/AdminHome"
+@layout AdminLayout
+@using CodelineStore.Components.Layout
+
+@inject NavigationManager Navigation
+<MudContainer Class="mt-4">
+    <MudGrid Spacing="2">
+        <!-- Welcome Banner -->
+        <MudItem xs="12">
+            <MudPaper Elevation="3" Class="p-4 text-center" Style="background-color: #f8f9fa;">
+                <MudText Typo="Typo.h4" Class="mb-2">Welcome, </MudText>
+                <MudText Typo="Typo.subtitle1" Color="Color.Secondary">Manage your store effectively with the tools below.</MudText>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Quick Actions -->
+        <MudItem xs="12">
+            <MudGrid Spacing="2">
+                <MudItem xs="6" sm="4">
+                    <MudCard Class="text-center hover:shadow-lg" Style="cursor: pointer;" @onclick="NavigateToViewUsers">
+                        <MudCardContent>
+                            <MudIcon Icon="@Icons.Material.Filled.People" Style="font-size: 40px;" Color="Color.Primary" />
+                            <MudText Typo="Typo.h6" Class="mt-2">View Users</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <MudItem xs="6" sm="4">
+                    <MudCard Class="text-center hover:shadow-lg" Style="cursor: pointer;" @onclick="NavigateToManageCategories">
+                        <MudCardContent>
+                            <MudIcon Icon="@Icons.Material.Filled.Category" Style="font-size: 40px;" Color="Color.Primary" />
+                            <MudText Typo="Typo.h6" Class="mt-2">Manage Categories</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <MudItem xs="6" sm="4">
+                    <MudCard Class="text-center hover:shadow-lg" Style="cursor: pointer;" @onclick="NavigateToAnalytics">
+                        <MudCardContent>
+                            <MudIcon Icon="@Icons.Material.Filled.Analytics" Style="font-size: 40px;" Color="Color.Primary" />
+                            <MudText Typo="Typo.h6" Class="mt-2">Analytics</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+
+        <!-- Recent Activity Section -->
+        <MudItem xs="12">
+            <MudPaper Elevation="3" Class="p-4">
+                <MudText Typo="Typo.h5">Recent Activity</MudText>
+                <MudDivider Class="my-2" />
+
+                <MudTable Items="@RecentActivities" Dense="true">
+                    <HeaderContent>
+                        <MudTh>Activity</MudTh>
+                        <MudTh>Time</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@context.Activity</MudTd>
+                        <MudTd>@context.Time</MudTd>
+                    </RowTemplate>
+                    <NoRecordsContent>
+                        <MudText Typo="Typo.subtitle2" Align="Align.Center">No recent activity found.</MudText>
+                    </NoRecordsContent>
+                </MudTable>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+
+    private List<ActivityLog> RecentActivities = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate loading recent activities (replace with actual data source)
+        RecentActivities = await Task.FromResult(new List<ActivityLog>
+        {
+            new ActivityLog { Activity = "User John added a new product.", Time = "10 mins ago" },
+            new ActivityLog { Activity = "Category \"Electronics\" updated.", Time = "1 hour ago" },
+            new ActivityLog { Activity = "User Jane signed up as a seller.", Time = "2 hours ago" },
+        });
+    }
+
+    private void NavigateToViewUsers()
+    {
+        Navigation.NavigateTo("/ViewUsers");
+    }
+
+    private void NavigateToManageCategories()
+    {
+        Navigation.NavigateTo("/ManageCategories");
+    }
+
+    private void NavigateToAnalytics()
+    {
+        Navigation.NavigateTo("/Analytics");
+    }
+
+    private class ActivityLog
+    {
+        public string Activity { get; set; }
+        public string Time { get; set; }
+    }
+}

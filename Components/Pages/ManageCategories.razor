@@ -1,4 +1,5 @@
 ﻿@page "/ManageCategories"
+@layout AdminLayout
 @inject NavigationManager Navigation
 @inject ApplicationDbContext DbContext
 @inject IMapper mapper
@@ -6,6 +7,7 @@
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
 @using AutoMapper
+@using CodelineStore.Components.Layout
 @using CodelineStore.Data
 @using CodelineStore.Data.Model
 @using Microsoft.EntityFrameworkCore

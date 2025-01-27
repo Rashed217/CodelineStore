@@ -1,8 +1,10 @@
 ﻿@page "/EditUser/{UserId:int}"
 @inject ApplicationDbContext DbContext
 @inject NavigationManager Navigation
+@using CodelineStore.Components.Layout
 @using CodelineStore.Data.Model
 @using Microsoft.EntityFrameworkCore
+@layout AdminLayout
 
 <MudContainer Class="mt-4">
     @if (UserDetails == null)

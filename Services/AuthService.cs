@@ -1,6 +1,6 @@
 ﻿using Azure;
 using JWTAuth.Model;
-using JWTAuthentication;
+
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.JSInterop;
@@ -49,7 +49,8 @@ namespace CodelineStore.Services
             );
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
+            SaveTokenToCookie(tokenString);
+            ((CustomAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(tokenString);
             return new JwtTokenResponse
             {
                 Token = tokenString,
@@ -71,7 +72,14 @@ namespace CodelineStore.Services
             // Store the token in a cookie
             await _jsRuntime.InvokeVoidAsync("eval", $"document.cookie = 'authToken={token}; {cookieOptions.ToString()}';");
         }
+        public async Task Logout()
+        {
+            // Remove the token from the cookie
+            await _jsRuntime.InvokeVoidAsync("eval", "document.cookie = 'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'");
 
+            // Mark the user as logged out
+            ((CustomAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsLoggedOut();
+        }
         public int? GetLoggedInSellerId()
         {
             var httpContext = _httpContextAccessor.HttpContext;

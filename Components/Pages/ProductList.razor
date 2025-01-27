@@ -32,7 +32,6 @@ else
                 <th>Price</th>
                 <th>Description</th>
                 <th>Category</th>
-                <th>Seller</th>
                 <th>Image</th>
                 <th>Actions</th> <!-- Add Actions column -->
             </tr>
@@ -46,7 +45,7 @@ else
                     <td>@product.Price</td>
                     <td>@product.Description</td>
                     <td>@product.Category?.Name</td> <!-- Category Name -->
-                    <td>@product.Seller?.User?.Username</td> <!-- Seller Name (assuming User has Name property) -->
+                 @*    <td>@product.Seller?.User?.Username</td> *@ <!-- Seller Name (assuming User has Name property) -->
                     <td>
                         @if (product.ProductImages.Any())
                         {
