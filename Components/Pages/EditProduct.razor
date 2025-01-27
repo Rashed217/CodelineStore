@@ -37,7 +37,12 @@ else
 
         <div class="mb-3">
             <label for="productCategory">Category</label>
-            <InputText id="productCategory" class="form-control" Value="@selectedCategoryName" Disabled="true" />
+            <InputSelect id="productCategory" class="form-control" @bind-Value="editProduct.CategoryId">
+                @foreach (var category in categories)
+                {
+                    <option value="@category.CatId">@category.Name</option>
+                }
+            </InputSelect>
         </div>
 
         <div class="mb-3">
@@ -57,20 +62,18 @@ else
     private Product product;
     private Product editProduct;
     private string imagePath;
-    private string selectedCategoryName;
+    private List<Category> categories = new List<Category>();
     private bool isLoading = true; // Loading flag
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // Start the fetch process to load the product for editing
-            Console.WriteLine($"Fetching product with ID: {id}");  // Debugging log
-
             // Fetch product by ID
+            Console.WriteLine($"Fetching product with ID: {id}");
+
             product = await ProductService.GetProductByIdAsync(id);
 
-            // Proceed directly with editing without checking the user state
             if (product != null)
             {
                 editProduct = new Product
@@ -81,6 +84,7 @@ else
                         Description = product.Description,
                         CategoryId = product.CategoryId
                     };
+            
                 
             }
             else
@@ -94,7 +98,6 @@ else
         }
         finally
         {
-            // Set isLoading to false once fetching is done (either successful or failed)
             isLoading = false;
             Console.WriteLine("Loading state set to false.");
         }
@@ -110,8 +113,12 @@ else
     {
         try
         {
-            // Add the product or update the existing one (based on logic)
+            if (editProduct == null) return;
+
+            // Add or update product logic using CompoundService
             var productId = CompoundService.AddProduct(editProduct, imagePath);
+
+            // Navigate back to product list after saving
             Navigation.NavigateTo("/ProductList");
         }
         catch (Exception ex)
