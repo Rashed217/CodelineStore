@@ -1,0 +1,90 @@
+﻿@page "/Checkout"
+@using CodelineStore.Components.Layout
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavigationManager
+@layout CustomerLayout
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    @if (IsLoading)
+    {
+        <MudText Typo="Typo.h6">Loading checkout details...</MudText>
+    }
+    else if (HasError)
+    {
+        <MudText Typo="Typo.h6" Color="Color.Error">Error loading checkout details.</MudText>
+    }
+    else
+    {
+        <MudPaper Class="p-4">
+            <!-- Checkout Details -->
+            <MudText Typo="Typo.h4">Checkout</MudText>
+
+            <!-- Cart Items -->
+            <MudDivider Class="my-4" />
+
+            <!-- Shipping Info -->
+            <MudDivider Class="my-4" />
+            <MudText Typo="Typo.h6">Shipping Information</MudText>
+            <MudTextField Label="Full Name" @bind-Value="FullName" />
+            <MudTextField Label="Address" @bind-Value="Address" />
+            <MudTextField Label="City" @bind-Value="City" />
+            <MudTextField Label="Postal Code" @bind-Value="PostalCode" />
+            <MudTextField Label="Country" @bind-Value="Country" />
+
+            <!-- Payment Info -->
+            <MudDivider Class="my-4" />
+            <MudText Typo="Typo.h6">Payment Information</MudText>
+            <MudTextField Label="Credit Card Number" @bind-Value="CardNumber" />
+            <MudTextField Label="Expiration Date" @bind-Value="ExpirationDate" />
+            <MudTextField Label="CVV" @bind-Value="CVV" />
+
+            <!-- Checkout Button -->
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" OnClick="CompleteCheckout">
+                Complete Checkout
+            </MudButton>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    private bool IsLoading = true;
+    private bool HasError = false;
+
+
+    // Shipping Info
+    private string FullName;
+    private string Address;
+    private string City;
+    private string PostalCode;
+    private string Country;
+
+    // Payment Info
+    private string CardNumber;
+    private string ExpirationDate;
+    private string CVV;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Here, you would load the cart items from a service or database.
+        }
+        catch
+        {
+            HasError = true;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void CompleteCheckout()
+    {
+        // Logic to handle the checkout process (e.g., save order, process payment)
+        Console.WriteLine("Checkout completed!");
+        NavigationManager.NavigateTo("/OrderConfirmation");
+    }
+}
+

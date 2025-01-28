@@ -39,8 +39,6 @@
     <!-- Stock Input -->
     <MudTextField T="int" Label="Stock" @bind-Value="newProduct.Stock" Variant="Variant.Outlined" Class="mb-3" />
 
-    <!-- TotalSold (You can set this automatically, for now it's not used directly in the form) -->
-    <MudTextField T="int" Label="Total Sold" @bind-Value="newProduct.TotalSold" Variant="Variant.Outlined" Class="mb-3" Disabled />
 
     <!-- Category Dropdown (assuming you have a list of categories) -->
     <MudSelect T="int" Label="Category" @bind-Value="newProduct.CategoryId" Variant="Variant.Outlined" Class="mb-3">
@@ -127,7 +125,7 @@
         {
 
             // Add the new product to the database
-            compoundService.AddProduct(newProduct, imagePath);
+            compoundService.AddProductWithImage(newProduct, imagePath);
 
             showSuccessAlert = true;
             // Reset the form after successful submission

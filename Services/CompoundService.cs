@@ -28,35 +28,34 @@ namespace CodelineStore.Services
 
         }
 
-        public int AddProduct(Product product, string ImgePath)
+        public int AddProductWithImage(Product product, string ImagePath)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
+                    // Assign the image path to the Product.Image property
+                    product.Image = ImagePath;
+
+                    // Create the product using your service
                     var productOut = _productService.CreateProductAsync(product);
 
-                    var productImg = new ProductImages
-                    {
-                        product = productOut,
-                        ProductId = productOut.PId,
-                        imagePath = ImgePath,
-                    };
-
-                    var productImgOut = _productService.CreateProductImagesAsync(productImg);
-
+                    // Save changes to the database
                     _context.SaveChanges();
                     transaction.Commit();
 
+                    // Return the product's ID after saving
                     return product.PId;
                 }
                 catch (Exception ex)
                 {
+                    // If any error occurs, rollback the transaction
                     transaction.Rollback();
-                    throw new InvalidOperationException("An error occured when adding product " + ex.Message);
+                    throw new InvalidOperationException("An error occurred when adding product: " + ex.Message);
                 }
             }
         }
+
 
         public async Task<bool> DeleteProduct(Product product)
         {

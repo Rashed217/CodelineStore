@@ -1,0 +1,30 @@
+﻿@page "/OrderConfirmation"
+@using CodelineStore.Components.Layout
+@inject NavigationManager NavigationManager
+@layout CustomerLayout
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    <MudPaper Class="p-4">
+        <MudText Typo="Typo.h4" Class="text-center">Thank You!</MudText>
+        <MudText Typo="Typo.h6" Class="mt-2 text-center">Your order has been placed successfully.</MudText>
+
+        <MudDivider Class="my-4" />
+
+        <MudText Typo="Typo.body1" Class="text-center">
+            We are processing your order and will notify you once it's on its way!
+        </MudText>
+
+        <!-- Back to Home Button -->
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" OnClick="GoToHomePage">
+            Go to Home
+        </MudButton>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private void GoToHomePage()
+    {
+        // Navigate to the home page or another page after order confirmation
+        NavigationManager.NavigateTo("/");
+    }
+}
