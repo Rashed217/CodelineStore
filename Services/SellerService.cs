@@ -66,7 +66,7 @@ namespace CodelineStore.Services
                     ProductId = p.PId,
                     Name = p.Name,
                     Price = p.Price,
-                    MainImagePath = !string.IsNullOrEmpty(p.Image) ? p.Image : "https://via.placeholder.com/300"
+                    Image = !string.IsNullOrEmpty(p.Image) ? p.Image : "https://via.placeholder.com/300"
                 }).ToList()
             };
         }

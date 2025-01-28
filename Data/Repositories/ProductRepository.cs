@@ -45,7 +45,7 @@ namespace CodelineStore.Data.Repositories
                     ProductId = p.PId,
                     Name = p.Name,
                     Price = p.Price,
-                    MainImagePath = p.Image
+                    Image = p.Image
                 })
                 .FirstOrDefaultAsync();
 
