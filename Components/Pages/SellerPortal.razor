@@ -2,12 +2,10 @@
 @using CodelineStore.Components.Layout
 @layout SellerLayout
 
-
 <MudPaper Elevation="4" Class="p-4">
     <MudText Typo="Typo.h5">Seller Overview</MudText>
     <MudText>Welcome to the seller portal! Here you can view your sales overview.</MudText>
 </MudPaper>
-
 
 <div class="d-flex justify-start align-center" style="height: 50vh;">
     <MudCard>
@@ -20,16 +18,84 @@
     </MudCard>
 </div>
 
+<div class="d-flex justify-start align-center mt-4">
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Elevation="2" Class="p-3">
+                <MudText Typo="Typo.h6">Total Sales</MudText>
+                <MudText Typo="Typo.h4">@TotalSales</MudText>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Elevation="2" Class="p-3">
+                <MudText Typo="Typo.h6">Total Revenue</MudText>
+                <MudText Typo="Typo.h4">@TotalRevenue</MudText>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Elevation="2" Class="p-3">
+                <MudText Typo="Typo.h6">Average Order Value</MudText>
+                <MudText Typo="Typo.h4">@AverageOrderValue</MudText>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</div>
 
 @code {
-    private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
+    private int Index = -1; // Default value cannot be 0 -> first selected index is 0.
     public ChartOptions Options = new ChartOptions();
 
-    public List<ChartSeries> Series = new List<ChartSeries>()
-    {
-        new ChartSeries() { Name = "Stock Left", Data = new double[] { 90, 79, 72, 69, 62, 62, 55, 65, 70 } },
-        new ChartSeries() { Name = "Sold", Data = new double[] { 10, 41, 35, 51, 49, 62, 69, 91, 148 } },
-    };
+    private Random _random;  // Declare random here
+
+    public List<ChartSeries> Series { get; set; }
     public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" };
 
+    // Key statistics
+    public int TotalSales => Convert.ToInt32(Series.SelectMany(series => series.Data).Sum());
+    public decimal TotalRevenue => _random.Next(10000, 50000);  // Random revenue between 10,000 and 50,000
+
+    // Round to 2 decimal places
+    public decimal AverageOrderValue => Math.Round(TotalRevenue / TotalSales, 2);
+
+    protected override void OnInitialized()
+    {
+        _random = new Random();  // Initialize Random properly here
+
+        // Inline random data for Sales series (Stock Left, Sold)
+        Series = new List<ChartSeries>()
+        {
+            new ChartSeries()
+            {
+                Name = "Stock Left",
+                Data = new double[]
+                {
+                    _random.Next(50, 150),
+                    _random.Next(50, 150),
+                    _random.Next(50, 150),
+                    _random.Next(50, 150),
+                    _random.Next(50, 150),
+                    _random.Next(50, 150),
+                    _random.Next(50, 150),
+                    _random.Next(50, 150),
+                    _random.Next(50, 150)
+                }
+            },
+            new ChartSeries()
+            {
+                Name = "Sold",
+                Data = new double[]
+                {
+                    _random.Next(30, 100),
+                    _random.Next(30, 100),
+                    _random.Next(30, 100),
+                    _random.Next(30, 100),
+                    _random.Next(30, 100),
+                    _random.Next(30, 100),
+                    _random.Next(30, 100),
+                    _random.Next(30, 100),
+                    _random.Next(30, 100)
+                }
+            }
+        };
+    }
 }
