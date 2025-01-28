@@ -15,7 +15,7 @@ namespace CodelineStore.Data.Repositories
 
         public List<Product> GetAllProductsAsync()
         {
-            return  _context.Products
+            return _context.Products
                 .Include(p => p.Seller)
                 .Include(p => p.Category)
                 .ToList();
@@ -45,7 +45,7 @@ namespace CodelineStore.Data.Repositories
                     ProductId = p.PId,
                     Name = p.Name,
                     Price = p.Price,
-                    MainImagePath = p.Image
+                    Image = p.Image
                 })
                 .FirstOrDefaultAsync();
 
