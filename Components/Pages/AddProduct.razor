@@ -11,13 +11,9 @@
 @layout SellerLayout
 
 <header>
-    <!-- Navigation bar or header here -->
     <h2>Seller Dashboard</h2>
-    <nav>
-
-    </nav>
+    <nav></nav>
 </header>
-
 
 <h3>Add Product</h3>
 
@@ -34,13 +30,15 @@
     <MudTextField T="string" Label="Product Name" @bind-Value="newProduct.Name" Variant="Variant.Outlined" Class="mb-3" />
     <MudTextField T="decimal" Label="Price" @bind-Value="newProduct.Price" Variant="Variant.Outlined" Class="mb-3" />
     <MudTextField T="string" Label="Description" @bind-Value="newProduct.Description" Variant="Variant.Outlined" Class="mb-3" />
-    <MudTextField T="string" Label="Image URL" @bind-Value="imagePath" Variant="Variant.Outlined" Class="mb-3" />
+
+    <!-- Media Upload for Image -->
+    <MudText Class="mb-3">Upload Product Image</MudText>
+    <InputFile OnChange="HandleFileUpload" />
 
     <!-- Stock Input -->
     <MudTextField T="int" Label="Stock" @bind-Value="newProduct.Stock" Variant="Variant.Outlined" Class="mb-3" />
 
-
-    <!-- Category Dropdown (assuming you have a list of categories) -->
+    <!-- Category Dropdown -->
     <MudSelect T="int" Label="Category" @bind-Value="newProduct.CategoryId" Variant="Variant.Outlined" Class="mb-3">
         @foreach (var category in categories)
         {
@@ -48,26 +46,25 @@
         }
     </MudSelect>
 
-    <!-- Seller Dropdown (assuming you have a list of sellers) -->
+    <!-- Seller Dropdown -->
     <MudSelect T="int" Label="Seller" @bind-Value="newProduct.SellerId" Variant="Variant.Outlined" Class="mb-3">
         @foreach (var seller in sellers)
         {
-            <MudSelectItem T="int" Value="@seller.SId">@seller.User.Client</MudSelectItem>
+            <MudSelectItem T="int" Value="@seller.SId">@seller.User.Username</MudSelectItem>
         }
     </MudSelect>
 
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="HandleValidSubmit">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary">
         Add Product
     </MudButton>
 </MudForm>
 
 <div class="seller-layout">
-
     <footer>
-        <!-- Footer content here -->
         <p>&copy; 2025 CodelineStore. All rights reserved.</p>
     </footer>
 </div>
+
 <style>
     .seller-layout {
         padding: 20px;
@@ -79,36 +76,18 @@
         text-align: center;
     }
 
-    nav ul {
-        display: flex;
-        justify-content: center;
-        list-style: none;
-        padding: 0;
-    }
-
-        nav ul li {
-            margin: 0 10px;
-        }
-
-            nav ul li a {
-                text-decoration: none;
-                color: #333;
-            }
-
     footer {
         text-align: center;
         margin-top: 20px;
     }
 </style>
 
-
-
 @code {
     private MudForm form;
     private bool showSuccessAlert = false;
     private bool showFailedAlert = false;
     private Product newProduct = new Product();
-    private string imagePath;
+    private string uploadedImagePath;
     private List<Category> categories = new List<Category>(); // Categories to show in dropdown
     private List<Seller> sellers = new List<Seller>(); // Sellers to show in dropdown
 
@@ -119,15 +98,35 @@
         sellers = await DbContext.Sellers.Include(s => s.User).ToListAsync();
     }
 
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        if (file != null)
+        {
+            // Generate a unique file name and save it
+            var filePath = Path.Combine("wwwroot/images", file.Name);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.OpenReadStream().CopyToAsync(stream);
+            }
+
+            uploadedImagePath = $"/images/{file.Name}"; // Relative path for the uploaded file
+        }
+    }
+
     private void HandleValidSubmit()
     {
         try
         {
+            // Assign the uploaded image path to the product
+            newProduct.Image = uploadedImagePath;
 
             // Add the new product to the database
-            compoundService.AddProductWithImage(newProduct, imagePath);
+            compoundService.AddProductWithImage(newProduct, uploadedImagePath);
 
             showSuccessAlert = true;
+
             // Reset the form after successful submission
             newProduct = new Product();
         }

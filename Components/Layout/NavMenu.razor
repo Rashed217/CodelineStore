@@ -27,27 +27,45 @@
             <MudNavLink Href="/Brands/Adidas">
                 Adidas
             </MudNavLink>
+            <MudNavLink Href="/Brands/Zara">
+                Zara
+            </MudNavLink>
+            <MudNavLink Href="/Brands/Zara">
+                Zara
+            </MudNavLink>
         </MudNavGroup>
 
         <MudNavGroup Title="Categories" Icon="@Icons.Material.Filled.Category">
             <MudNavLink Href="/Categories">
                 Show All Categories
             </MudNavLink>
-
-            @if (categories != null && categories.Any())
-            {
-                @foreach (var category in categories)
-                {
-                    <!-- Use Category ID instead of Name in URL -->
-                    <MudNavLink Href="@($"/CategoryProducts/{category.CatId}")">
-                        @category.Name
-                    </MudNavLink>
-                }
-            }
-            else
-            {
-                <MudText Typo="Typo.body2">Loading categories...</MudText>
-            }
+            <MudNavLink Href="/CategoryProducts/1">
+                Electronics
+            </MudNavLink>
+            <MudNavLink Href="/CategoryProducts/2">
+                Clothing
+            </MudNavLink>
+            <MudNavLink Href="/CategoryProducts/3">
+                Books
+            </MudNavLink>
+            <MudNavLink Href="/CategoryProducts/4">
+                Groceries
+            </MudNavLink>
+            <MudNavLink Href="/CategoryProducts/5">
+                Toys
+            </MudNavLink>
+            <MudNavLink Href="/CategoryProducts/6">
+                Beauty
+            </MudNavLink>
+            <MudNavLink Href="/CategoryProducts/7">
+                Sports
+            </MudNavLink>
+            <MudNavLink Href="/CategoryProducts/8">
+                Health
+            </MudNavLink>
+            <MudNavLink Href="/CategoryProducts/9">
+                Automotive
+            </MudNavLink>
         </MudNavGroup>
 
         @code {
