@@ -3,10 +3,12 @@
 @inject ApplicationDbContext DbContext
 @inject IMapper mapper
 @inject IWebHostEnvironment WebHostEnvironment
+@layout CustomerLayout
 
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
 @using AutoMapper
+@using CodelineStore.Components.Layout
 @using CodelineStore.DTOs.SellerDTOs
 @using CodelineStore.DTOs.UserDTOs
 @using CodelineStore.Data

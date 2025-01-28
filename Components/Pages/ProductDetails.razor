@@ -15,9 +15,10 @@
     else
     {
         <MudPaper Class="p-4">
-            <!-- Product Images -->
+            <!-- Product Image -->
             <MudCard Class="mt-3">
-                <MudCardMedia Src="@(ProductImages.FirstOrDefault() ?? "https://via.placeholder.com/300")" Alt="Product Image" Class="mud-width-full mud-height-300" />
+                <MudCardMedia Src="@ProductImage" Alt="Product Image"
+                              Class="mud-width-full mud-height-300" />
             </MudCard>
 
             <!-- Product Info -->
@@ -30,7 +31,7 @@
             <!-- Seller Info -->
             <MudDivider Class="my-4" />
             <div class="d-flex align-items-center">
-                <MudAvatar Size="Size.Large" Alt="Seller Logo" @bind-Src="SellerProfileImage" Class="me-3" />
+                <MudAvatar Size="Size.Large" Alt="Seller Logo" Src="@SellerProfileImage" Class="me-3" />
                 <div>
                     <MudText Typo="Typo.h6">Seller: @SellerName</MudText>
                     <MudText Typo="Typo.body2">Rating: @SellerRating/5</MudText>
@@ -58,11 +59,11 @@
     private decimal Price;
     private int Stock;
     private int TotalSold;
-    private List<string> ProductImages = new List<string>();
+    private string ProductImage = "https://via.placeholder.com/300"; // Set default placeholder
 
     // Seller Info
     private string SellerName;
-    private string SellerProfileImage;
+    private string SellerProfileImage = "https://via.placeholder.com/150"; // Set default placeholder
     private int SellerRating;
 
     protected override async Task OnInitializedAsync()
@@ -71,7 +72,6 @@
         {
             // Fetch product info
             var product = await DbContext.Products
-                .Include(p => p.ProductImages)
                 .Include(p => p.Seller)
                 .ThenInclude(s => s.User)
                 .FirstOrDefaultAsync(p => p.PId == ProductId);
@@ -84,11 +84,15 @@
                 Price = product.Price;
                 Stock = product.Stock;
                 TotalSold = product.TotalSold;
-                ProductImages = product.ProductImages.Select(img => img.imagePath).ToList();
+
+                // Check for product image
+                ProductImage = !string.IsNullOrEmpty(product.Image)
+                    ? product.Image
+                    : "https://via.placeholder.com/300";
 
                 // Map seller data
                 SellerName = product.Seller.User.Username;
-                SellerProfileImage = product.Seller.ProfileImagePath ?? "https://via.placeholder.com/150"; // Default placeholder
+                SellerProfileImage = product.Seller.ProfileImagePath ?? "https://via.placeholder.com/150";
                 SellerRating = product.Seller.SellerRating;
             }
             else
@@ -110,7 +114,8 @@
     {
         // Logic to add the product to the cart
         Console.WriteLine($"Product {ProductId} added to cart!");
-        // You can implement a proper cart system here
     }
 }
+
+
 
