@@ -51,6 +51,7 @@ else
 
 @code {
     private SellerOutput seller;
+    private Seller sellerUser;
     private bool isLoading = true;
     private string? Token;
     private int currentUserId; // Replace with actual user id retrieval logic (e.g., from session, token)
@@ -63,13 +64,15 @@ else
             if (!string.IsNullOrWhiteSpace(Token))
             {
                 currentUserId = int.Parse(JwtHelper.GetClaimValue(Token, ClaimTypes.NameIdentifier));
-                
+
+                sellerUser = SellerService.GetAllSeller().Where(s => s.UserId == currentUserId).FirstOrDefault();
             }
             
             var userData = UserService.GetUserData(null, currentUserId);
             if (userData.Role == "Seller")
             {
-                seller = await SellerService.GetSellerWithProductsAsync(currentUserId);
+                
+                seller = await SellerService.GetSellerWithProductsAsync(sellerUser.SId);
             }
             else
             {
