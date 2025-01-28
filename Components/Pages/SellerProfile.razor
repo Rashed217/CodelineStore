@@ -7,75 +7,78 @@
 @inject ISellerService SellerService
 @inject IUserService UserService
 @inject NavigationManager Navigation
+@inject IAuthService authService
 @using CodelineStore.Components.Layout
+@using System.Security.Claims
 @layout SellerLayout
+@inject IHttpContextAccessor HttpContextAccessor
 
-<h3>Seller Profile</h3>
+<h2 class="page-title">Seller Profile</h2>
 
 @if (isLoading)
 {
-    <p>Loading...</p>
+    <p class="loading-text">Loading...</p>
 }
 else if (seller == null)
 {
-    <p>Seller not found.</p>
+    <p class="error-text">Seller not found.</p>
 }
 else
 {
-    <div class="profile-card">
-        <h4>Profile Information</h4>
-        <p><strong>Name:</strong> @seller.SellerName</p>
-        <p><strong>Rating:</strong> @seller.SellerRating</p>
-        <p><strong>Profile Image:</strong> <img src="@seller.SellerProfileImage" alt="Profile Image" style="max-width: 150px;" /></p>
+    <div class="profile-container">
+        <div class="profile-card">
+            <img class="profile-image" src="@GetImagePath(seller.SellerProfileImage)" alt="Profile Image" />
+            <h3>@seller.SellerName</h3>
+            <p class="rating">⭐ @seller.SellerRating / 5</p>
+            <button class="edit-btn" @onclick="EditProfile">Edit Profile</button>
+        </div>
 
-        <h5>Products</h5>
-        <ul>
-            @foreach (var product in seller.Products)
-            {
-                <li>
-                    <p><strong>@product.Name</strong></p>
-                    <p>Price: @product.Price</p>
-                    <img src="@product.Image" alt="@product.Name" style="max-width: 100px;" />
-                </li>
-            }
-        </ul>
-
-        <button class="btn btn-primary" @onclick="EditProfile">Edit Profile</button>
+        <div class="products-section">
+            <h3>Products</h3>
+            <div class="product-grid">
+                @foreach (var product in seller.Products)
+                {
+                    <div class="product-card">
+                        <img class="product-image" src="@GetImagePath(product.Image)" alt="@product.Name" />
+                        <p class="product-name">@product.Name</p>
+                        <p class="product-price">$@product.Price</p>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 }
 
 @code {
     private SellerOutput seller;
     private bool isLoading = true;
-    private int currentUserId = 1; // Replace with actual user id retrieval logic (e.g., from session, token)
-
+    private string? Token;
+    private int currentUserId; // Replace with actual user id retrieval logic (e.g., from session, token)
     protected override async Task OnInitializedAsync()
     {
+
         try
         {
-            // Fetch current user data
-            var userData = UserService.GetUserData(null, currentUserId);  // Correct, call synchronously
-            Console.WriteLine($"User Data: {userData.UserName}, Role: {userData.Role}");
-
+            Token = HttpContextAccessor.HttpContext?.Request.Cookies["authToken"];
+            if (!string.IsNullOrWhiteSpace(Token))
+            {
+                currentUserId = int.Parse(JwtHelper.GetClaimValue(Token, ClaimTypes.NameIdentifier));
+                
+            }
+            
+            var userData = UserService.GetUserData(null, currentUserId);
             if (userData.Role == "Seller")
             {
-                // If the role is Seller, fetch the seller's profile data
                 seller = await SellerService.GetSellerWithProductsAsync(currentUserId);
-
-                if (seller == null)
-                {
-                    Console.WriteLine($"Seller not found for User ID: {currentUserId}");
-                }
             }
             else
             {
-                seller = null;  // If the user is not a seller, no profile data will be shown
-                Console.WriteLine($"User with ID {currentUserId} is not a Seller.");
+                seller = null;
             }
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading user or seller details: {ex.Message}");
+            Console.Error.WriteLine($"Error loading seller details: {ex.Message}");
         }
         finally
         {
@@ -85,7 +88,135 @@ else
 
     private void EditProfile()
     {
-        // Navigate to the Edit Profile page
         Navigation.NavigateTo("/EditProfile");
     }
+
+    private string GetImagePath(string fileName)
+    {
+        return string.IsNullOrEmpty(fileName) ? "/images/default-product.jpg" : $"/images/{fileName}";
+    }
 }
+
+
+
+
+<style>
+    /* General Page Styling */
+    .page-title {
+        text-align: center;
+        font-size: 32px;
+        font-weight: bold;
+        margin-top: 20px;
+        color: #333;
+    }
+
+    /* Loading & Error Messages */
+    .loading-text, .error-text {
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        color: red;
+    }
+
+    /* Profile Container */
+    .profile-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        margin-top: 40px;
+    }
+
+    /* Profile Card */
+    .profile-card {
+        background: #fff;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        width: 400px;
+    }
+
+    .profile-image {
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 20px;
+    }
+
+    .rating {
+        font-size: 20px;
+        font-weight: bold;
+        color: #ff9800;
+    }
+
+    .edit-btn {
+        background-color: #1976d2;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 15px;
+    }
+
+        .edit-btn:hover {
+            background-color: #1259a7;
+        }
+
+    /* Products Section */
+    .products-section {
+        width: 90%;
+        max-width: 1000px;
+    }
+
+        .products-section h3 {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+    /* Product Grid */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Increased card size */
+        gap: 20px;
+        justify-items: center;
+    }
+
+    /* Product Card */
+    .product-card {
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        width: 200px; /* Increased width */
+    }
+
+    .product-image {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 12px;
+    }
+
+    .product-name {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .product-price {
+        font-size: 16px;
+        font-weight: bold;
+        color: green;
+    }
+
+
+</style>

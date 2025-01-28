@@ -9,5 +9,6 @@ namespace CodelineStore.Services
         int? GetLoggedInSellerId();
         Task Logout();
         Task SaveTokenToCookie(string token);
+        
     }
 }
