@@ -1,4 +1,5 @@
 using CodelineStore.Data.Model;
+using CodelineStore.DTOs.ProductDTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodelineStore.Data.Repositories
@@ -29,9 +30,26 @@ namespace CodelineStore.Data.Repositories
         {
             // Fetch products that belong to the specified category
             return await _context.Products
-                .Include(p => p.ProductImages) // Include related product images
+                .Include(p => p.Image) // Include related product images
                 .Where(p => p.CategoryId == categoryId) // Filter by categoryId
                 .ToListAsync(); // Execute query and return the list
+        }
+
+        public async Task<ProductDto> GetProductDetailsAsync(int productId)
+        {
+            // Query the database for product details and map to ProductDto
+            var product = await _context.Products
+                .Where(p => p.PId == productId)
+                .Select(p => new ProductDto
+                {
+                    ProductId = p.PId,
+                    Name = p.Name,
+                    Price = p.Price,
+                    MainImagePath = p.Image
+                })
+                .FirstOrDefaultAsync();
+
+            return product; // Return the mapped ProductDto
         }
 
         public ProductImages CreateProductImagesAsync(ProductImages productImages)

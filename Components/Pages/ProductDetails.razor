@@ -16,10 +16,10 @@
     {
         <MudPaper Class="p-4">
             <!-- Product Image -->
-            <MudCard Class="mt-3">
-                <MudCardMedia Src="@ProductImage" Alt="Product Image"
-                              Class="mud-width-full mud-height-300" />
-            </MudCard>
+            <!-- Product Image -->
+            <div class="mt-3">
+                <img src="@Image" alt="Product Image" class="mud-width-full mud-height-180" />
+            </div>
 
             <!-- Product Info -->
             <MudText Typo="Typo.h4" Class="mt-3">@ProductName</MudText>
@@ -31,7 +31,10 @@
             <!-- Seller Info -->
             <MudDivider Class="my-4" />
             <div class="d-flex align-items-center">
-                <MudAvatar Size="Size.Large" Alt="Seller Logo" Src="@SellerProfileImage" Class="me-3" />
+                <img src="@SellerProfileImage"
+                     alt="Seller Logo"
+                     class="me-3"
+                     style="width: 80px; height: 80px; object-fit: cover;" />
                 <div>
                     <MudText Typo="Typo.h6">Seller: @SellerName</MudText>
                     <MudText Typo="Typo.body2">Rating: @SellerRating/5</MudText>
@@ -59,12 +62,13 @@
     private decimal Price;
     private int Stock;
     private int TotalSold;
-    private string ProductImage = "https://via.placeholder.com/300"; // Set default placeholder
+    private string Image = "https://via.placeholder.com/300"; // Set default placeholder
 
     // Seller Info
     private string SellerName;
     private string SellerProfileImage = "https://via.placeholder.com/150"; // Set default placeholder
     private int SellerRating;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -86,7 +90,7 @@
                 TotalSold = product.TotalSold;
 
                 // Check for product image
-                ProductImage = !string.IsNullOrEmpty(product.Image)
+                Image = !string.IsNullOrEmpty(product.Image)
                     ? product.Image
                     : "https://via.placeholder.com/300";
 

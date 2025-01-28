@@ -2,17 +2,35 @@
 using CodelineStore.Data.Repositories;
 using CodelineStore.DTOs.ProductDTO;
 using CodelineStore.DTOs.SellerDTOs;
+using Microsoft.EntityFrameworkCore;
 namespace CodelineStore.Services
 {
     public class SellerService : ISellerService
     {
+        private readonly ApplicationDbContext _context;
         private readonly ISellerRepository _sellerRepository;
         private readonly IUserService _userService;
 
-        public SellerService(ISellerRepository sellerRepository, IUserService userService)
+        public SellerService(ISellerRepository sellerRepository, IUserService userService, ApplicationDbContext context)
         {
             _sellerRepository = sellerRepository;
             _userService = userService;
+            _context = context;
+        }
+
+        public async Task<Seller> GetSellerAsync(int sellerId)
+        {
+            return await _context.Sellers
+                .Where(s => s.SId == sellerId)
+                .Select(s => new Seller
+                {
+                    SId = s.SId,
+                    UserId = s.UserId,
+                    SellerRating = s.SellerRating,
+                    ProfileImagePath = s.ProfileImagePath,
+                    User = s.User
+                })
+                .FirstOrDefaultAsync();
         }
 
         public IEnumerable<Seller> GetAllSeller()

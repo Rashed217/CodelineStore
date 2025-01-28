@@ -1,6 +1,7 @@
 ﻿using CodelineStore.Data.Model;
 using CodelineStore.Data.Repositories;
 using CodelineStore.DTOs.ProductDTO;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodelineStore.Services
 {
@@ -55,6 +56,7 @@ namespace CodelineStore.Services
                                 ?? "https://via.placeholder.com/200" // Default image if none exists
             }).ToList();
         }
+
 
         public Product CreateProductAsync(Product product)
         {

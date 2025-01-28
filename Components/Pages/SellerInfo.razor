@@ -18,7 +18,10 @@
     {
         <MudPaper Class="mb-6" Style="width: 100%; height: 250px; padding: 40px;">
             <div class="d-flex align-items-center">
-                <MudAvatar Size="Size.Large" Alt="Seller Logo" Src="@Seller.SellerProfileImage" Class="me-3" Style="width: 180px; height: 180px;" />
+                <img src="@Seller.SellerProfileImage"
+                     alt="Seller Logo"
+                     class="me-3"
+                     style="width: 180px; height: 180px; object-fit: cover;" />
                 <div>
                     <MudText Typo="Typo.h4" Style="align-content=center">@Seller.SellerName</MudText>
                     <MudText Typo="Typo.h5" Style="align-content=center">Rating: @Seller.SellerRating/5</MudText>
