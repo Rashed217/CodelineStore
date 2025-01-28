@@ -73,6 +73,8 @@ namespace CodelineStore.Services
             await _jsRuntime.InvokeVoidAsync("eval", $"document.cookie = 'authToken={token}; {cookieOptions.ToString()}';");
         }
 
+        
+
         public int? GetLoggedInSellerId()
         {
             var httpContext = _httpContextAccessor.HttpContext;
@@ -80,37 +82,36 @@ namespace CodelineStore.Services
             if (httpContext == null)
             {
                 Log.Error("HttpContext is null. Cannot retrieve seller ID.");
-                throw new InvalidOperationException("HttpContext is not available.");
+                return null;
             }
 
-            // Retrieve the User ID from claims (assuming NameIdentifier is the user ID)
             var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-
             if (userIdClaim == null)
             {
-                Log.Error("NameIdentifier claim is missing in the token.");
+                Log.Error("User ID claim (NameIdentifier) is missing in token.");
                 return null;
             }
 
             if (!int.TryParse(userIdClaim.Value, out var userId))
             {
-                Log.Error("Failed to parse UserId claim value.");
+                Log.Error($"Failed to parse UserId claim value: {userIdClaim.Value}");
                 return null;
             }
 
-            Log.Information($"UserId claim retrieved: {userId}");
+            Log.Information($"UserId retrieved from claims: {userId}");
 
-            // Query the database to get the Seller ID associated with the User ID
+            // Fetch seller ID from DB
             var seller = _context.Sellers.FirstOrDefault(s => s.UserId == userId);
             if (seller == null)
             {
-                Log.Error($"No seller found for UserId: {userId}");
+                Log.Error($"No seller found in database for UserId: {userId}");
                 return null;
             }
 
-            Log.Information($"SellerId retrieved: {seller.User.Seller.SId}");
-            return seller.User.Seller.SId;
+            Log.Information($"SellerId found: {seller.SId}");
+            return seller.SId;
         }
+
         public async Task Logout()
         {
             // Remove the token from the cookie
