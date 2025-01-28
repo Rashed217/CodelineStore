@@ -9,8 +9,8 @@ namespace CodelineStore.Data.Repositories
         Task<bool> DeleteProductAsync(int id);
         List<Product> GetAllProductsAsync();
         Task<List<Product>> GetProductsByCategoryAsync(int categoryId);
-        Task<Product> GetProductByIdAsync(int id);
-        Task<Product> UpdateProductAsync(Product product);
+        Task<Product> GetProductByIdAsync(int productId);
+        Task UpdateProductAsync(Product product);
         Task<ProductImages> UpdateProductImagesAsync(ProductImages productImages);
     }
 }

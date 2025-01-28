@@ -11,7 +11,7 @@ namespace CodelineStore.Services
         Task<List<Product>> GetAllProductsAsync();
         Task<List<ProductDto>> GetProductsByCategoryAsync(int categoryId);
         Task<Product> GetProductByIdAsync(int id);
-        Task<Product> UpdateProductAsync(Product product);
-        Task<ProductImages> UpdateProductImagesAsync(ProductImages productImages);
+        Task UpdateProductAsync(Product product);
+        //Task<ProductImages> UpdateProductImagesAsync(ProductImages productImages);
     }
 }
