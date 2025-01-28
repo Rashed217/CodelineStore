@@ -1,0 +1,91 @@
+﻿@page "/Profile"
+@using CodelineStore.Data.Model
+@using CodelineStore.Services
+@using CodelineStore.DTOs.SellerDTOs
+@using CodelineStore.DTOs.ProductDTO
+@using CodelineStore.DTOs.UserDTOs
+@inject ISellerService SellerService
+@inject IUserService UserService
+@inject NavigationManager Navigation
+@using CodelineStore.Components.Layout
+@layout SellerLayout
+
+<h3>Seller Profile</h3>
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else if (seller == null)
+{
+    <p>Seller not found.</p>
+}
+else
+{
+    <div class="profile-card">
+        <h4>Profile Information</h4>
+        <p><strong>Name:</strong> @seller.SellerName</p>
+        <p><strong>Rating:</strong> @seller.SellerRating</p>
+        <p><strong>Profile Image:</strong> <img src="@seller.SellerProfileImage" alt="Profile Image" style="max-width: 150px;" /></p>
+
+        <h5>Products</h5>
+        <ul>
+            @foreach (var product in seller.Products)
+            {
+                <li>
+                    <p><strong>@product.Name</strong></p>
+                    <p>Price: @product.Price</p>
+                    <img src="@product.MainImagePath" alt="@product.Name" style="max-width: 100px;" />
+                </li>
+            }
+        </ul>
+
+        <button class="btn btn-primary" @onclick="EditProfile">Edit Profile</button>
+    </div>
+}
+
+@code {
+    private SellerOutput seller;
+    private bool isLoading = true;
+    private int currentUserId = 1; // Replace with actual user id retrieval logic (e.g., from session, token)
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Fetch current user data
+            var userData = UserService.GetUserData(null, currentUserId);  // Correct, call synchronously
+            Console.WriteLine($"User Data: {userData.UserName}, Role: {userData.Role}");
+
+            if (userData.Role == "Seller")
+            {
+                // If the role is Seller, fetch the seller's profile data
+                seller = await SellerService.GetSellerWithProductsAsync(currentUserId);
+
+                if (seller == null)
+                {
+                    Console.WriteLine($"Seller not found for User ID: {currentUserId}");
+                }
+            }
+            else
+            {
+                seller = null;  // If the user is not a seller, no profile data will be shown
+                Console.WriteLine($"User with ID {currentUserId} is not a Seller.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error loading user or seller details: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void EditProfile()
+    {
+        // Navigate to the Edit Profile page
+        Navigation.NavigateTo("/EditProfile");
+    }
+}
