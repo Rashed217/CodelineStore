@@ -22,6 +22,7 @@ namespace CodelineStore.Data.Model
         [Range(0, int.MaxValue, ErrorMessage = "Stock cannot be negative.")]
         public int Stock { get; set; }
 
+        public string Image {  get; set; }
         public int TotalSold { get; set; } = 0;
 
         [ForeignKey(nameof(Category))]

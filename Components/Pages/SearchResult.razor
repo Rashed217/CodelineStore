@@ -1,10 +1,11 @@
 ﻿@page "/searchresults"
+@using CodelineStore.Components.Layout
 @using CodelineStore.Data
 @using CodelineStore.Services
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager NavigationManager
 @inject ApplicationDbContext DbContext
-
+@layout CustomerLayout
 <MudGrid Justify="Justify.FlexStart" AlignItems="AlignItems.Start" Class="mt-4">
     @if (filteredProducts.Any())
     {
@@ -12,7 +13,7 @@
         {
             <MudItem xs="12" sm="6" md="4">
                 <MudCard>
-                    @* <MudCardMedia Image="@product.Seller" Height="200" /> *@
+                    <MudCardMedia Image="@product.Image" Height="200" />
                     <MudCardContent>
                         <MudText Typo="Typo.h5">@product.Name</MudText>
                         <MudText Typo="Typo.body2">@product.Description</MudText>
@@ -32,12 +33,10 @@
         <MudText Typo="Typo.body1" Align="Align.Center" Class="mt-4">No products found for "@searchKeyword".</MudText>
     }
 </MudGrid>
-
 @code {
     private string searchKeyword;
     private List<Product> allProducts = new(); // Loaded from the database
     private List<Product> filteredProducts = new();
-
     protected override async Task OnInitializedAsync()
     {
         // Parse the search keyword from the query string
@@ -47,19 +46,15 @@
         {
             searchKeyword = keyword;
         }
-
         // Load products from the database
         allProducts = await LoadProductsFromDatabase();
-
         // Filter products based on the search keyword
         FilterProducts();
     }
-
     private async Task<List<Product>> LoadProductsFromDatabase()
     {
         return await DbContext.Products.ToListAsync();
     }
-
     private void FilterProducts()
     {
         if (!string.IsNullOrWhiteSpace(searchKeyword))
@@ -69,7 +64,6 @@
                 .ToList();
         }
     }
-
     private void AddToCart(int productId)
     {
         // Logic to add the product to the cart

@@ -5,20 +5,25 @@
 namespace CodelineStore.Migrations
 {
     /// <inheritdoc />
-    public partial class RemoveImage : Migration
+    public partial class New : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
+            migrationBuilder.AddColumn<string>(
                 name: "Image",
-                table: "Products");
+                table: "Products",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.DropColumn(
+                name: "Image",
+                table: "Products");
         }
     }
 }
