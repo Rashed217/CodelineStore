@@ -22,6 +22,7 @@
 else if (seller == null)
 {
     <p class="error-text">Seller not found.</p>
+    Navigation.NavigateTo("/Profile", true);
 }
 else
 {
@@ -67,17 +68,19 @@ else
 
                 sellerUser = SellerService.GetAllSeller().Where(s => s.UserId == currentUserId).FirstOrDefault();
             }
-            
+
             var userData = UserService.GetUserData(null, currentUserId);
             if (userData.Role == "Seller")
             {
-                
+
                 seller = await SellerService.GetSellerWithProductsAsync(sellerUser.SId);
             }
             else
             {
                 seller = null;
+                
             }
+            
         }
         catch (Exception ex)
         {
