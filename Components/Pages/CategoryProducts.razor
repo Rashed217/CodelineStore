@@ -1,7 +1,9 @@
 ﻿@page "/CategoryProducts/{categoryId:int}"
+@using CodelineStore.DTOs.ProductDTO
 @using CodelineStore.Data.Model
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext DbContext
+
 <MudContainer>
     <MudGrid>
         @if (products != null && products.Any())
@@ -10,7 +12,9 @@
             {
                 <MudItem xs="12" sm="6" md="4" lg="3">
                     <MudCard Class="mx-auto my-2" Style="width: 100%; max-width: 350px;">
-                        <MudCardMedia Image="@product.ImagePath" Style="object-fit: cover; height: 300px; width: 100%;" />
+                        <div Style="height: 300px; width: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                            <img src="images/@product.Image" alt="@product.Name" style="object-fit: cover; height: 100%; width: 100%;" />
+                        </div>
                         <MudCardContent>
                             <MudText Typo="Typo.h5">@product.Name</MudText>
                             <MudText Typo="Typo.body2">Price: $@product.Price</MudText>
@@ -28,11 +32,27 @@
         }
     </MudGrid>
 </MudContainer>
+
+
 @code {
     [Parameter] public int CategoryId { get; set; }
     private List<ProductDto> products;
+
     protected override async Task OnInitializedAsync()
     {
+        await LoadProducts();
+    }
+
+    // Detect when CategoryId changes (fixes stuck products)
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadProducts();
+    }
+
+    private async Task LoadProducts()
+    {
+        Console.WriteLine($"Loading products for CategoryId: {CategoryId}");
+
         products = await DbContext.Products
             .Where(p => p.CategoryId == CategoryId)
             .Select(p => new ProductDto
@@ -40,17 +60,8 @@
                     ProductId = p.PId,
                     Name = p.Name,
                     Price = p.Price,
-                    ImagePath = p.ProductImages
-                            .Select(img => img.imagePath)
-                            .FirstOrDefault() ?? "images/default-product.png" // Fallback image
+                    Image = string.IsNullOrEmpty(p.Image) ? "images/default-product.png" : p.Image
                 })
             .ToListAsync();
-    }
-    public class ProductDto
-    {
-        public int ProductId { get; set; }
-        public string Name { get; set; }
-        public decimal Price { get; set; }
-        public string ImagePath { get; set; }
     }
 }

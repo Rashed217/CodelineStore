@@ -2,7 +2,7 @@
 @using CodelineStore.Data.Model
 @using CodelineStore.Services
 @using Microsoft.EntityFrameworkCore
-
+@inject ApplicationDbContext DbContext
 @inject ISellerService sellerService
 @inject ICategoryService categoryService
 
@@ -33,35 +33,50 @@
             <MudNavLink Href="/Categories">
                 Show All Categories
             </MudNavLink>
-            <MudNavLink Href="/Category/Groceries">
-                Groceries
-            </MudNavLink>
-            <MudNavLink Href="/Category/Electronics">
-                Electronics
-            </MudNavLink>
-            <MudNavLink Href="/Category/Clothing">
-                Clothing
-            </MudNavLink>
-            <MudNavLink Href="/Category/Books">
-                Books
-            </MudNavLink>
-            <MudNavLink Href="/Category/Toys">
-                Toys
-            </MudNavLink>
-            <MudNavLink Href="/Category/Sports">
-                Sports
-            </MudNavLink>
-            <MudNavLink Href="/Category/Beauty">
-                Beauty
-            </MudNavLink>
-            <MudNavLink Href="/Category/Automotive">
-                Automotive
-            </MudNavLink>
-            <MudNavLink Href="/Category/Health">
-                Health
-            </MudNavLink>
+
+            @if (categories != null && categories.Any())
+            {
+                @foreach (var category in categories)
+                {
+                    <!-- Use Category ID instead of Name in URL -->
+                    <MudNavLink Href="@($"/CategoryProducts/{category.CatId}")">
+                        @category.Name
+                    </MudNavLink>
+                }
+            }
+            else
+            {
+                <MudText Typo="Typo.body2">Loading categories...</MudText>
+            }
         </MudNavGroup>
 
+        @code {
+        private List<CategoryDto> categories = new();
+
+        protected override async Task OnInitializedAsync()
+        {
+            try
+            {
+            categories = await DbContext.Categories
+            .Select(c => new CategoryDto
+                {
+                    CatId = c.CatId,  // Fetch correct Category ID
+                    Name = c.Name.Trim() // Ensure correct category name
+                })
+            .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+            Console.WriteLine("Error fetching categories: " + ex.Message);
+            }
+        }
+
+        public class CategoryDto
+        {
+            public int CatId { get; set; }
+            public string Name { get; set; }
+        }
+        }
 
        
 

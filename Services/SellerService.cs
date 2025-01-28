@@ -48,7 +48,7 @@ namespace CodelineStore.Services
                     ProductId = p.PId,
                     Name = p.Name,
                     Price = p.Price,
-                    MainImagePath = p.ProductImages.FirstOrDefault()?.imagePath ?? "https://via.placeholder.com/300"
+                    Image = p.ProductImages.FirstOrDefault()?.imagePath ?? "https://via.placeholder.com/300"
                 }).ToList()
             };
         }
