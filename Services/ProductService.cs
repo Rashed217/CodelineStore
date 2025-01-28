@@ -70,28 +70,22 @@ namespace CodelineStore.Services
             return _productRepository.CreateProductAsync(product);
         }
 
-        public async Task<Product> UpdateProductAsync(Product product)
+        public async Task UpdateProductAsync(Product product)
         {
-            if (product.PId <= 0)
-            {
-                throw new ArgumentException("Product ID must be greater than zero.");
-            }
-
             var existingProduct = await _productRepository.GetProductByIdAsync(product.PId);
+
             if (existingProduct == null)
             {
-                throw new KeyNotFoundException($"Product with ID {product.PId} not found.");
+                throw new KeyNotFoundException("Product not found.");
             }
 
-            ValidateProduct(product);
+            existingProduct.Name = product.Name;
+            existingProduct.Description = product.Description;
+            existingProduct.Price = product.Price;
+            existingProduct.CategoryId = product.CategoryId;
+            existingProduct.Image = product.Image;
 
-            // Perform additional business logic validation
-            if (product.Price <= 0)
-            {
-                throw new ArgumentException("Product price must be greater than zero.");
-            }
-
-            return await _productRepository.UpdateProductAsync(product);
+            await _productRepository.UpdateProductAsync(existingProduct); // Assuming a method to update the product
         }
 
         public async Task<bool> DeleteProductAsync(int id)

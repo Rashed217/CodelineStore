@@ -20,12 +20,9 @@ namespace CodelineStore.Data.Repositories
                 .ToList();
         }
 
-        public async Task<Product> GetProductByIdAsync(int id)
+        public async Task<Product> GetProductByIdAsync(int productId)
         {
-            return await _context.Products
-                .Include(p => p.Seller)
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(p => p.PId == id);
+            return await _context.Products.FindAsync(productId);
         }
 
         public async Task<List<Product>> GetProductsByCategoryAsync(int categoryId)
@@ -55,11 +52,10 @@ namespace CodelineStore.Data.Repositories
             return product;
         }
 
-        public async Task<Product> UpdateProductAsync(Product product)
+        public async Task UpdateProductAsync(Product product)
         {
-            _context.Products.Update(product);
+            _context.Products.Update(product);  // Ensure the product is updated
             await _context.SaveChangesAsync();
-            return product;
         }
 
         public async Task<bool> DeleteProductAsync(int id)
