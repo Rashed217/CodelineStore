@@ -14,7 +14,8 @@
 @using CodelineStore.Data.Model
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.EntityFrameworkCore
-
+@using Microsoft.EntityFrameworkCore
+@using CodelineStore.Data.Model
 <MudContainer>
     <MudGrid>
         @if (categories != null && categoryIcons != null && categories.Any() && categoryIcons.Any())
@@ -29,28 +30,24 @@
                             <MudText Typo="Typo.body2">Explore our @categories[item] collection.</MudText>
                         </MudCardContent>
                         <MudCardActions>
-                            <MudButton Variant="Variant.Text" Color="Color.Primary">View Category</MudButton>
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => ViewCategory(item + 1))">
+                                View Category
+                            </MudButton>
                         </MudCardActions>
                     </MudCard>
                 </MudItem>
             }
         }
-        else if ((categories == null || !categories.Any()) || (categoryIcons == null || !categoryIcons.Any()))
+        else
         {
             <MudText Typo="Typo.h6" Align="Align.Center" Class="mt-4">No categories available.</MudText>
         }
-        else
-        {
-            <MudText Typo="Typo.h6" Align="Align.Center" Class="mt-4">Data mismatch: categories and icons do not align.</MudText>
-        }
     </MudGrid>
 </MudContainer>
-
 @code {
     private List<string> categories;
     private List<string> categoryIcons;
-
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         // Initialize categories and their respective icons
         categories = new List<string>
@@ -65,7 +62,6 @@
             "Automotive",
             "Health"
         };
-
         categoryIcons = new List<string>
         {
             "images/groceries.png",
@@ -78,13 +74,25 @@
             "images/automotive.png",
             "images/health.png"
         };
-
-        // Ensure both lists have the same count
+        // Add categories from the database
+        var dbCategories = await DbContext.Categories.Select(c => c.Name).ToListAsync();
+        foreach (var dbCategory in dbCategories)
+        {
+            if (!categories.Contains(dbCategory))
+            {
+                categories.Add(dbCategory);
+                categoryIcons.Add("images/default-category.png"); // Use a default image for new categories
+            }
+        }
+        // Ensure the lists have matching counts
         if (categories.Count != categoryIcons.Count)
         {
-            // Log or handle the mismatch gracefully
-            categories = categories.Take(Math.Min(categories.Count, categoryIcons.Count)).ToList();
-            categoryIcons = categoryIcons.Take(Math.Min(categories.Count, categoryIcons.Count)).ToList();
+            categories = categories.Take(categoryIcons.Count).ToList();
+            categoryIcons = categoryIcons.Take(categories.Count).ToList();
         }
+    }
+    private void ViewCategory(int categoryId)
+    {
+        Navigation.NavigateTo($"/CategoryProducts/{categoryId}");
     }
 }
