@@ -6,12 +6,13 @@ namespace CodelineStore.Services
     public interface ISellerService
     {
         void AddSeller(SellerOutput input);
-        Task<SellerOutput> GetSellerWithProductsAsync(int sellerId);
         bool EmailExists(string email);
         IEnumerable<Seller> GetAllSeller();
+        Task<Seller> GetSellerAsync(int sellerId);
         Seller GetSellerById(int sellerId);
         Seller GetSellerByName(string sellerName);
         SellerOutput GetSellerData(string? sellerName, int? sellerId);
+        Task<SellerOutput> GetSellerWithProductsAsync(int sellerId);
         void UpdateSeller(Seller seller);
     }
 }

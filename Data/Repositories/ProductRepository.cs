@@ -1,4 +1,5 @@
 using CodelineStore.Data.Model;
+using CodelineStore.DTOs.ProductDTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodelineStore.Data.Repositories
@@ -20,21 +21,35 @@ namespace CodelineStore.Data.Repositories
                 .ToList();
         }
 
-        public async Task<Product> GetProductByIdAsync(int id)
+        public async Task<Product> GetProductByIdAsync(int productId)
         {
-            return await _context.Products
-                .Include(p => p.Seller)
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(p => p.PId == id);
+            return await _context.Products.FindAsync(productId);
         }
 
         public async Task<List<Product>> GetProductsByCategoryAsync(int categoryId)
         {
             // Fetch products that belong to the specified category
             return await _context.Products
-                .Include(p => p.ProductImages) // Include related product images
+                .Include(p => p.Image) // Include related product images
                 .Where(p => p.CategoryId == categoryId) // Filter by categoryId
                 .ToListAsync(); // Execute query and return the list
+        }
+
+        public async Task<ProductDto> GetProductDetailsAsync(int productId)
+        {
+            // Query the database for product details and map to ProductDto
+            var product = await _context.Products
+                .Where(p => p.PId == productId)
+                .Select(p => new ProductDto
+                {
+                    ProductId = p.PId,
+                    Name = p.Name,
+                    Price = p.Price,
+                    MainImagePath = p.Image
+                })
+                .FirstOrDefaultAsync();
+
+            return product; // Return the mapped ProductDto
         }
 
         public ProductImages CreateProductImagesAsync(ProductImages productImages)
@@ -55,11 +70,10 @@ namespace CodelineStore.Data.Repositories
             return product;
         }
 
-        public async Task<Product> UpdateProductAsync(Product product)
+        public async Task UpdateProductAsync(Product product)
         {
-            _context.Products.Update(product);
+            _context.Products.Update(product);  // Ensure the product is updated
             await _context.SaveChangesAsync();
-            return product;
         }
 
         public async Task<bool> DeleteProductAsync(int id)

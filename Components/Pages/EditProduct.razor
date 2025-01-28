@@ -36,19 +36,31 @@ else
         </div>
 
         <div class="mb-3">
-            <label for="productCategory">Category</label>
-            <InputSelect id="productCategory" class="form-control" @bind-Value="editProduct.CategoryId">
-                @foreach (var category in categories)
-                {
-                    <option value="@category.CatId">@category.Name</option>
-                }
-            </InputSelect>
+            <!-- Remove the InputSelect or disable it -->
+            <!-- <InputSelect id="productCategory" class="form-control" @bind-Value="editProduct.CategoryId">
+            @foreach (var category in categories)
+            {
+                    <option value="@category.CId">@category.CategoryName</option>
+            }
+            </InputSelect> -->
+           
         </div>
+
 
         <div class="mb-3">
             <label for="productImage">Product Image</label>
-            <InputFile id="productImage" class="form-control" OnChange="HandleImageUpload" />
-        </div>
+
+            @if (!string.IsNullOrEmpty(editProduct.Image))
+            {
+                <div>
+                    <img src="@editProduct.Image" alt="Current Image" style="max-height: 150px; max-width: 150px;" />
+                    <p>Current image</p>
+                </div>
+            }
+
+    <InputFile id="productImage" class="form-control" OnChange="HandleImageUpload" />
+</div>
+
 
         <button type="submit" class="btn btn-primary">Save</button>
         <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
@@ -76,16 +88,18 @@ else
 
             if (product != null)
             {
+                // Initialize the edit model with the existing product data
                 editProduct = new Product
                     {
                         PId = product.PId,
                         Name = product.Name,
                         Price = product.Price,
                         Description = product.Description,
-                        CategoryId = product.CategoryId
+                        CategoryId = product.CategoryId,
+                        Image = product.Image // Retain the image path
                     };
-            
-                
+
+
             }
             else
             {
@@ -106,7 +120,7 @@ else
     private void HandleImageUpload(InputFileChangeEventArgs e)
     {
         var file = e.File;
-        imagePath = $"images/{file.Name}";
+        imagePath = $"images/{file.Name}"; // Update imagePath with the new image file name
     }
 
     private async Task SaveProduct()
@@ -115,10 +129,16 @@ else
         {
             if (editProduct == null) return;
 
-            // Add or update product logic using CompoundService
-            var productId = CompoundService.AddProduct(editProduct, imagePath);
+            // If there's a new image, set the image path; otherwise, keep the existing one.
+            if (!string.IsNullOrEmpty(imagePath))
+            {
+                editProduct.Image = imagePath; // Use the 'Image' property instead of 'ImagePath'
+            }
 
-            // Navigate back to product list after saving
+            // Use an update method instead of adding a new product
+            await ProductService.UpdateProductAsync(editProduct);
+
+            // Navigate back to the product list after saving
             Navigation.NavigateTo("/ProductList");
         }
         catch (Exception ex)
@@ -126,6 +146,8 @@ else
             Console.Error.WriteLine($"Error saving product: {ex.Message}");
         }
     }
+
+
 
     private void Cancel()
     {
