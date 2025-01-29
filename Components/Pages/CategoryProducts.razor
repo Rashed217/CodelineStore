@@ -2,6 +2,7 @@
 @using CodelineStore.DTOs.ProductDTO
 @using CodelineStore.Data.Model
 @using Microsoft.EntityFrameworkCore
+@inject NavigationManager Navigation
 @inject ApplicationDbContext DbContext
 
 <MudContainer>
@@ -20,7 +21,9 @@
                             <MudText Typo="Typo.body2">Price: $@product.Price</MudText>
                         </MudCardContent>
                         <MudCardActions>
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary">Add to Cart</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" OnClick="AddToCart">
+                                Buy Now
+                            </MudButton>
                         </MudCardActions>
                     </MudCard>
                 </MudItem>
@@ -63,5 +66,10 @@
                     Image = string.IsNullOrEmpty(p.Image) ? "images/default-product.png" : p.Image
                 })
             .ToListAsync();
+    }
+
+    private void AddToCart()
+    {
+        Navigation.NavigateTo("/Checkout");
     }
 }
