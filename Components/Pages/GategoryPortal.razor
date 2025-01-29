@@ -53,29 +53,29 @@
     {
         // Initialize categories and their respective icons
         categories = new List<string>
-        {
-            "Groceries",
-            "Electronics",
-            "Clothing",
-            "Books",
-            "Toys",
-            "Sports",
-            "Beauty",
-            "Automotive",
-            "Health"
-        };
+{
+    "Electronics",
+    "Clothing",
+    "Books",
+    "Groceries",
+    "Toys",
+    "Beauty",
+    "Sports",
+    "Health",
+    "Automotive"
+};
         categoryIcons = new List<string>
-        {
-            "images/groceries.png",
-            "images/electronics.png",
-            "images/clothing.png",
-            "images/books.png",
-            "images/toys.png",
-            "images/sports.png",
-            "images/beauty.png",
-            "images/automotive.png",
-            "images/health.png"
-        };
+{
+    "images/electronics.png",
+    "images/clothing.png",
+    "images/books.png",
+    "images/groceries.png",
+    "images/toys.png",
+    "images/beauty.png",
+    "images/sports.png",
+    "images/health.png",
+    "images/automotive.png"
+};
         // Add categories from the database
         var dbCategories = await DbContext.Categories.Select(c => c.Name).ToListAsync();
         foreach (var dbCategory in dbCategories)

@@ -99,7 +99,7 @@ else
 
     private string GetImagePath(string fileName)
     {
-        return string.IsNullOrEmpty(fileName) ? "/images/default-product.jpg" : $"/images/{fileName}";
+        return string.IsNullOrEmpty(fileName) ? "/images/default-product.jpg" : $"{fileName}";
     }
 }
 
