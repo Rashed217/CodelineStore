@@ -6,6 +6,7 @@
 @using static MudBlazor.CategoryTypes
 @inject ICompoundService compoundService
 @inject NavigationManager Navigation
+@inject IWebHostEnvironment WebHostEnvironment
 @inject ApplicationDbContext DbContext
 @using CodelineStore.Components.Layout
 @layout SellerLayout
@@ -26,14 +27,23 @@
     <MudAlert Severity="Severity.Error" Class="mb-3">An error occurred</MudAlert>
 }
 
-<MudForm @ref="form" OnValidSubmit="HandleValidSubmit">
+
+
+<MudForm @ref="form" IsValid="@success">
     <MudTextField T="string" Label="Product Name" @bind-Value="newProduct.Name" Variant="Variant.Outlined" Class="mb-3" />
     <MudTextField T="decimal" Label="Price" @bind-Value="newProduct.Price" Variant="Variant.Outlined" Class="mb-3" />
     <MudTextField T="string" Label="Description" @bind-Value="newProduct.Description" Variant="Variant.Outlined" Class="mb-3" />
 
     <!-- Media Upload for Image -->
     <MudText Class="mb-3">Upload Product Image</MudText>
-    <InputFile OnChange="HandleFileUpload" />
+    <MudFileUpload T="IBrowserFile" FilesChanged="HandleFileUpload" Class="mb-4">
+        <ActivatorContent>
+            <MudFab Color="Color.Primary"
+                    StartIcon="@Icons.Material.Filled.Image"
+                    Label="Upload picture" />
+        </ActivatorContent>
+    </MudFileUpload>
+
 
     <!-- Stock Input -->
     <MudTextField T="int" Label="Stock" @bind-Value="newProduct.Stock" Variant="Variant.Outlined" Class="mb-3" />
@@ -54,10 +64,20 @@
         }
     </MudSelect>
 
-    <MudButton Variant="Variant.Filled" Color="Color.Primary">
+
+    <!-- Submit Button -->
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               FullWidth="true"
+               OnClick="HandleValidSubmit">
         Add Product
     </MudButton>
 </MudForm>
+
+
+
+
+
 
 <div class="seller-layout">
     <footer>
@@ -84,6 +104,7 @@
 
 @code {
     private MudForm form;
+    private bool success;
     private bool showSuccessAlert = false;
     private bool showFailedAlert = false;
     private Product newProduct = new Product();
@@ -98,20 +119,43 @@
         sellers = await DbContext.Sellers.Include(s => s.User).ToListAsync();
     }
 
-    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    // private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    // {
+    //     var file = e.File;
+
+    //     if (file != null)
+    //     {
+    //         // Generate a unique file name and save it
+    //         var filePath = Path.Combine("wwwroot/images", file.Name);
+    //         using (var stream = new FileStream(filePath, FileMode.Create))
+    //         {
+    //             await file.OpenReadStream().CopyToAsync(stream);
+    //         }
+
+    //         uploadedImagePath = $"/images/{file.Name}"; // Relative path for the uploaded file
+    //     }
+    // }
+    private IList<IBrowserFile> _files = new List<IBrowserFile>();
+    private async Task HandleFileUpload(IBrowserFile file)
     {
-        var file = e.File;
+        // Add the uploaded file to the _files list
+        _files.Add(file);
 
-        if (file != null)
+        // Construct the save path
+        var savePath = Path.Combine(WebHostEnvironment.WebRootPath, "images", $"{file.Name}");
+        uploadedImagePath = $"/images/{file.Name}";
+        // Ensure the directory exists
+        Directory.CreateDirectory(Path.GetDirectoryName(savePath));
+
+        try
         {
-            // Generate a unique file name and save it
-            var filePath = Path.Combine("wwwroot/images", file.Name);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.OpenReadStream().CopyToAsync(stream);
-            }
-
-            uploadedImagePath = $"/images/{file.Name}"; // Relative path for the uploaded file
+            // Save the file to the server
+            await using var fileStream = new FileStream(savePath, FileMode.Create);
+            await file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(fileStream);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error uploading file '{file.Name}': {ex.Message}");
         }
     }
 

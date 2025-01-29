@@ -66,8 +66,16 @@ namespace CodelineStore.Data.Repositories
 
         public Product CreateProductAsync(Product product)
         {
-            _context.Products.Add(product);
-            return product;
+            try
+            {
+                _context.Products.Add(product);
+                return product;
+            }
+            catch(Exception e) 
+            {
+                return null;
+            }
+           
         }
 
         public async Task UpdateProductAsync(Product product)
