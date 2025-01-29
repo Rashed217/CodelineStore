@@ -18,7 +18,7 @@
     <!-- AppBar -->
     <MudAppBar Elevation="1" Style="height: 75px;">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <img src="images/CodelineStore.jpg" alt="Logo" style="height: 85px; width: 211px; margin-left: 15px" />
+        <button @onclick="GoToMain"><img src="images/CodelineStore.jpg" alt="Logo" style="height: 85px; width: 211px; margin-left: 15px" /></button>
         <MudSpacer />
 
         <div class="d-flex justify-content-center align-items-center" style="width: 100%; height: 80px; margin-left: 15px">
@@ -101,5 +101,11 @@
         {
             Navigation.NavigateTo($"/searchresults?keyword={Uri.EscapeDataString(searchKeyword)}");
         }
+    }
+
+    private void GoToMain()
+    {
+        Navigation.NavigateTo("/");
+
     }
 }
